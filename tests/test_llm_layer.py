@@ -86,3 +86,16 @@ def test_pricing_overrides_are_respected():
         "openai", "custom-model", 1_000_000, 0, overrides={"custom-model": [1.0, 2.0]}
     )
     assert cost == pytest.approx(1.0)
+
+
+def test_timeouts_produce_actionable_guidance():
+    """A bare "ReadTimeout" tells a local-model user nothing useful."""
+    import httpx
+
+    from peerlens.llm.providers import _timeout_error
+
+    error = _timeout_error("Ollama", httpx.ReadTimeout("timed out"))
+    message = str(error)
+    assert "PEERLENS_LLM_TIMEOUT" in message
+    assert "faster model" in message
+    assert "ReadTimeout" in message

@@ -23,6 +23,16 @@ def _timeout() -> httpx.Timeout:
     return httpx.Timeout(LLM_TIMEOUT_SECONDS, connect=15.0)
 
 
+def _timeout_error(provider: str, exc: Exception) -> LLMError:
+    """Timeouts are common on local models and need actionable guidance."""
+    return LLMError(
+        f"{provider} did not respond within {LLM_TIMEOUT_SECONDS:.0f}s. "
+        "Scientific reviews send a large prompt, and local models on CPU can "
+        "exceed this. Raise PEERLENS_LLM_TIMEOUT, use a smaller or faster model, "
+        f"or reduce the amount of research material. ({type(exc).__name__})"
+    )
+
+
 def _http_error(provider: str, response: httpx.Response) -> LLMError:
     detail = response.text[:600]
     try:
@@ -64,8 +74,11 @@ class OpenAIProvider(LLMProvider):
             payload["response_format"] = {"type": "json_object"}
 
         started = time.perf_counter()
-        async with httpx.AsyncClient(timeout=_timeout()) as client:
-            data = await self._post_adaptive(client, f"{base}/chat/completions", payload)
+        try:
+            async with httpx.AsyncClient(timeout=_timeout()) as client:
+                data = await self._post_adaptive(client, f"{base}/chat/completions", payload)
+        except httpx.TimeoutException as exc:
+            raise _timeout_error("OpenAI", exc) from exc
         latency_ms = int((time.perf_counter() - started) * 1000)
 
         try:
@@ -161,11 +174,14 @@ class AnthropicProvider(LLMProvider):
         }
 
         started = time.perf_counter()
-        async with httpx.AsyncClient(timeout=_timeout()) as client:
-            response = await client.post(f"{base}/v1/messages", json=payload, headers=headers)
-            if response.status_code >= 400:
-                raise _http_error("Anthropic", response)
-            data = response.json()
+        try:
+            async with httpx.AsyncClient(timeout=_timeout()) as client:
+                response = await client.post(f"{base}/v1/messages", json=payload, headers=headers)
+                if response.status_code >= 400:
+                    raise _http_error("Anthropic", response)
+                data = response.json()
+        except httpx.TimeoutException as exc:
+            raise _timeout_error("Anthropic", exc) from exc
         latency_ms = int((time.perf_counter() - started) * 1000)
 
         parts = [b.get("text", "") for b in data.get("content", []) if b.get("type") == "text"]
@@ -227,6 +243,8 @@ class OllamaProvider(LLMProvider):
                 if response.status_code >= 400:
                     raise _http_error("Ollama", response)
                 data = response.json()
+        except httpx.TimeoutException as exc:
+            raise _timeout_error("Ollama", exc) from exc
         except httpx.ConnectError as exc:
             raise LLMError(
                 f"Cannot reach Ollama at {base}. Is `ollama serve` running? "
