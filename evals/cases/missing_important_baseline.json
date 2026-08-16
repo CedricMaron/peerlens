@@ -1,0 +1,58 @@
+{
+  "id": "missing_important_baseline",
+  "description": "A state-of-the-art claim compared only to a weak baseline must be flagged.",
+  "target": {
+    "kind": "section_review",
+    "section": "experiments"
+  },
+  "inputs": [
+    {
+      "label": "Evaluation plan",
+      "content": "\nWe evaluate FedSpec against FedAvg (McMahan et al., 2017) only.\n\nOur related work section discusses FedProx, SCAFFOLD, MOON and FedDistill as the\nstandard approaches for non-IID federated learning, and notes that FedDistill is\nthe closest prior work to ours.\n\nWe claim FedSpec achieves state-of-the-art performance under label skew.\n"
+    }
+  ],
+  "expect": {
+    "min_severity": "major",
+    "signals": [
+      {
+        "name": "names the absent stronger baselines",
+        "any": [
+          "feddistill",
+          "scaffold",
+          "fedprox",
+          "moon",
+          "closest prior work",
+          "stronger baseline",
+          "missing baseline",
+          "only fedavg",
+          "sole baseline"
+        ]
+      },
+      {
+        "name": "connects the gap to the state-of-the-art claim",
+        "any": [
+          "state-of-the-art",
+          "state of the art",
+          "sota",
+          "cannot support",
+          "not supported",
+          "unsupported",
+          "cannot be claimed",
+          "cannot substantiate"
+        ]
+      },
+      {
+        "name": "recommends running the comparison",
+        "any": [
+          "compare",
+          "evaluate against",
+          "include",
+          "add",
+          "run",
+          "benchmark against"
+        ]
+      }
+    ],
+    "forbidden": []
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "id": "contribution_covered_by_prior_work",
+  "description": "A contribution the supplied prior work already establishes is not a contribution.",
+  "target": {
+    "kind": "section_review",
+    "section": "contribution"
+  },
+  "inputs": [
+    {
+      "label": "Prior work and contribution",
+      "content": "\nSupplied prior work:\n[L1] Zhang et al. 2022, \"Class-wise Teacher Ensembles for Federated Distillation\".\n     Trains one teacher per class group and distills into a global student under\n     Dirichlet label skew. Reports gains over FedAvg on CIFAR-10.\n     This is the closest prior work.\n\nOur contribution:\nC1: We are the first to propose training multiple teachers, each specialized on a\n    subset of classes, and distilling them into a global student for federated\n    learning under label skew. Our approach is novel.\n\nDifference from Zhang et al.: we use 2 classes per teacher instead of their class\ngroups, and we implement it in PyTorch rather than TensorFlow.\n"
+    }
+  ],
+  "expect": {
+    "min_severity": "major",
+    "signals": [
+      {
+        "name": "identifies that the closest prior work already does this",
+        "any": [
+          "zhang",
+          "l1",
+          "already",
+          "closest prior work",
+          "prior work does",
+          "substantially covered",
+          "same approach",
+          "equivalent"
+        ]
+      },
+      {
+        "name": "rejects the first-to-propose / novelty claim",
+        "any": [
+          "first to",
+          "novel",
+          "novelty",
+          "cannot claim",
+          "not novel",
+          "unsupported",
+          "overstated",
+          "not first"
+        ]
+      },
+      {
+        "name": "identifies the difference as implementation or parameter, not science",
+        "any": [
+          "implementation",
+          "pytorch",
+          "tensorflow",
+          "parameter",
+          "engineering",
+          "not a scientific",
+          "configuration",
+          "incremental",
+          "2 classes"
+        ]
+      }
+    ],
+    "forbidden": [
+      {
+        "name": "does not accept the novelty claim",
+        "any": [
+          "the contribution is clearly novel",
+          "novelty is well established",
+          "this is a novel contribution"
+        ]
+      }
+    ]
+  }
+}

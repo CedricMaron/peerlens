@@ -1,0 +1,59 @@
+{
+  "id": "finding_unsupported_by_results",
+  "description": "A finding with no supporting result must be traced and flagged.",
+  "target": {
+    "kind": "section_review",
+    "section": "findings"
+  },
+  "inputs": [
+    {
+      "label": "Findings draft",
+      "content": "\nResults we have:\nR1: FedSpec 74.8% vs FedAvg 71.2% top-1 accuracy on CIFAR-10, one run.\n\nFindings:\nF1: FedSpec achieves higher accuracy than FedAvg on CIFAR-10.\nF2: FedSpec converges faster than FedAvg.\nF3: FedSpec is more robust to client dropout.\nF4: FedSpec reduces communication cost.\n\nWe did not measure convergence speed, client dropout, or communication cost.\n"
+    }
+  ],
+  "expect": {
+    "min_severity": "major",
+    "signals": [
+      {
+        "name": "identifies the findings with no supporting result",
+        "any": [
+          "f2",
+          "f3",
+          "f4",
+          "convergence",
+          "dropout",
+          "communication",
+          "no supporting",
+          "not supported",
+          "no result",
+          "unsupported"
+        ]
+      },
+      {
+        "name": "distinguishes the one supported finding",
+        "any": [
+          "f1",
+          "only f1",
+          "accuracy",
+          "supported by r1",
+          "the sole",
+          "one finding"
+        ]
+      },
+      {
+        "name": "requires removal or measurement",
+        "any": [
+          "remove",
+          "measure",
+          "drop",
+          "delete",
+          "cannot be stated",
+          "must be supported",
+          "run the",
+          "collect"
+        ]
+      }
+    ],
+    "forbidden": []
+  }
+}

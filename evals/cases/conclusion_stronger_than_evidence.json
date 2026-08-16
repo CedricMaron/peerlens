@@ -1,0 +1,76 @@
+{
+  "id": "conclusion_stronger_than_evidence",
+  "description": "Cross-section: the conclusion asserts a mechanism the experiments never isolated.",
+  "target": {
+    "kind": "challenge"
+  },
+  "inputs": [
+    {
+      "label": "Full draft",
+      "content": "\nProblem: Federated learning degrades under label skew.\nGap: Prior distillation methods use a single global teacher.\nQuestion: Does teacher specialization improve federated distillation?\nH1: Class-specialized teachers improve knowledge transfer under label skew.\n\nMethodology: We train 8 teachers, each on 2 classes, and distill into a global student.\nBaselines: FedAvg.\n\nE4: specialized ensemble (8 teachers) vs single non-specialized teacher.\nR1: 74.8% vs 71.2%, one run each, no variance reported.\n\nF1: Specialization improves knowledge transfer.\nC1: Class-specialized teachers are a superior mechanism for federated knowledge\ntransfer, and our results demonstrate that specialization is the cause of the gain.\n\nLimitations: More datasets could be tested in future work.\n"
+    }
+  ],
+  "expect": {
+    "min_severity": "blocker",
+    "signals": [
+      {
+        "name": "traces the claim back to the confounded experiment",
+        "any": [
+          "e4",
+          "confound",
+          "ensemble size",
+          "number of teachers",
+          "cannot isolate",
+          "cannot attribute",
+          "two",
+          "capacity"
+        ]
+      },
+      {
+        "name": "flags the causal/mechanism claim as unsupported",
+        "any": [
+          "mechanism",
+          "cause",
+          "causal",
+          "demonstrat",
+          "stronger than",
+          "not supported",
+          "unsupported",
+          "exceeds"
+        ]
+      },
+      {
+        "name": "notes the missing variance or single run",
+        "any": [
+          "one run",
+          "single run",
+          "variance",
+          "seed",
+          "noise",
+          "spread",
+          "repetition"
+        ]
+      },
+      {
+        "name": "notes the generic limitations section",
+        "any": [
+          "limitation",
+          "generic",
+          "does not address",
+          "fails to acknowledge",
+          "more datasets"
+        ]
+      }
+    ],
+    "forbidden": [
+      {
+        "name": "does not open with praise",
+        "any": [
+          "this is excellent",
+          "strong piece of research",
+          "impressive work"
+        ]
+      }
+    ]
+  }
+}

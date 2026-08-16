@@ -215,6 +215,10 @@ async def analyze_paper(
     targets = sections or list(SECTION_KEYS)
     research_state.ensure_sections(db, paper.id)
 
+    # Fail fast on configuration problems rather than reporting eleven
+    # identical per-section errors.
+    client.build_provider(db)
+
     extracted: dict[str, dict] = {}
     reviewed: list[str] = []
     errors: dict[str, str] = {}

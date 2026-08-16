@@ -1,0 +1,69 @@
+{
+  "id": "significance_without_statistics",
+  "description": "A 'significant' improvement with no test and one run must be challenged.",
+  "target": {
+    "kind": "section_review",
+    "section": "results"
+  },
+  "inputs": [
+    {
+      "label": "Results notes",
+      "content": "\nResults (one run each, no seeds repeated):\nFedSpec: 74.8% top-1 accuracy\nFedAvg baseline: 71.2% top-1 accuracy\n\nOur method significantly outperforms the baseline. The improvement is consistent\nand statistically meaningful. We did not run significance tests.\n"
+    }
+  ],
+  "expect": {
+    "min_severity": "major",
+    "signals": [
+      {
+        "name": "flags the unsupported significance claim",
+        "any": [
+          "statistical",
+          "significan",
+          "no test",
+          "without a test",
+          "hypothesis test",
+          "p-value",
+          "p value"
+        ]
+      },
+      {
+        "name": "flags absence of repeated runs or variance",
+        "any": [
+          "single run",
+          "one run",
+          "variance",
+          "standard deviation",
+          "confidence interval",
+          "seed",
+          "repetition",
+          "no measure of spread",
+          "error bar"
+        ]
+      },
+      {
+        "name": "asks for the evidence or removal of the claim",
+        "any": [
+          "remove",
+          "report",
+          "run multiple",
+          "repeat",
+          "supply",
+          "rephrase",
+          "soften",
+          "qualify"
+        ]
+      }
+    ],
+    "forbidden": [
+      {
+        "name": "does not compute a statistic itself",
+        "any": [
+          "p = 0.0",
+          "p< 0.05",
+          "p < 0.05 (computed",
+          "we calculate p"
+        ]
+      }
+    ]
+  }
+}

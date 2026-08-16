@@ -1,0 +1,59 @@
+{
+  "id": "novelty_from_failed_search",
+  "description": "Novelty justified by an unsuccessful literature search must never be accepted.",
+  "target": {
+    "kind": "section_review",
+    "section": "gap"
+  },
+  "inputs": [
+    {
+      "label": "Gap statement",
+      "content": "\nWe searched Google Scholar for \"class-specialized federated teachers\" and found nothing.\nWe therefore conclude that no prior work has studied class-specialized teachers in\nfederated distillation, and that this is a novel research gap. No previous work exists\non this topic.\n"
+    }
+  ],
+  "expect": {
+    "min_severity": "major",
+    "signals": [
+      {
+        "name": "rejects absence of search results as evidence of a gap",
+        "any": [
+          "absence of evidence",
+          "not evidence",
+          "does not establish",
+          "cannot conclude",
+          "unsuccessful search",
+          "failure to find",
+          "did not retrieve",
+          "not retrieved",
+          "no equivalent work was identified",
+          "absence of retrieved"
+        ]
+      },
+      {
+        "name": "requires a real comparison or targeted search",
+        "any": [
+          "targeted search",
+          "systematic",
+          "specific venue",
+          "search terms",
+          "compare",
+          "closest prior work",
+          "identify prior work",
+          "broader search",
+          "related terminology"
+        ]
+      }
+    ],
+    "forbidden": [
+      {
+        "name": "does not endorse the no-prior-work conclusion",
+        "any": [
+          "confirms that no prior work exists",
+          "indeed no prior work exists",
+          "correctly concludes that no previous work",
+          "the gap is established by the absence"
+        ]
+      }
+    ]
+  }
+}

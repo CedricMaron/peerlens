@@ -1,0 +1,70 @@
+{
+  "id": "universal_claim_one_dataset",
+  "description": "A universal claim resting on a single dataset must be flagged as overgeneralisation.",
+  "target": {
+    "kind": "section_review",
+    "section": "contribution"
+  },
+  "inputs": [
+    {
+      "label": "Draft contributions",
+      "content": "\nWe evaluate FedSpec only on CIFAR-10 with a Dirichlet(0.1) partition across 10 clients.\nFedSpec reaches 74.8% vs 71.2% for FedAvg.\n\nContribution: We show that class-specialized teachers improve federated knowledge\ndistillation. Our abstract states: \"Class-specialized teachers improve knowledge\ntransfer in federated learning.\" The conclusion states that FedSpec is an effective\ngeneral solution for heterogeneous federated learning.\n"
+    }
+  ],
+  "expect": {
+    "min_severity": "major",
+    "signals": [
+      {
+        "name": "identifies the single-dataset evidence base",
+        "any": [
+          "single dataset",
+          "one dataset",
+          "only cifar",
+          "cifar-10 only",
+          "sole dataset",
+          "a single benchmark",
+          "one benchmark"
+        ]
+      },
+      {
+        "name": "names the overgeneralisation",
+        "any": [
+          "overgeneral",
+          "over-general",
+          "broader than",
+          "exceeds the evidence",
+          "not supported by the scope",
+          "generalis",
+          "generaliz",
+          "universal claim",
+          "unconditional"
+        ]
+      },
+      {
+        "name": "recommends narrowing the claim or widening the evidence",
+        "any": [
+          "narrow",
+          "restrict",
+          "qualify",
+          "scope the claim",
+          "additional dataset",
+          "more datasets",
+          "condition the claim",
+          "weaker form",
+          "hedge"
+        ]
+      }
+    ],
+    "forbidden": [
+      {
+        "name": "does not praise the contribution",
+        "any": [
+          "impressive",
+          "compelling contribution",
+          "strong contribution",
+          "excellent work"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "id": "ignored_negative_result",
+  "description": "A negative result present in the material must not disappear from the reporting.",
+  "target": {
+    "kind": "section_review",
+    "section": "results"
+  },
+  "inputs": [
+    {
+      "label": "Raw log",
+      "content": "\nCIFAR-10 Dirichlet(0.1): FedSpec 74.8%, FedAvg 71.2%.\nCIFAR-100 Dirichlet(0.1): FedSpec 41.2%, FedAvg 44.9%.  <- our method is worse here\nSVHN Dirichlet(0.5): FedSpec 88.1%, FedAvg 88.0%.  <- essentially no difference\n\nSummary for the paper: FedSpec improves accuracy over FedAvg on CIFAR-10.\nWe will report the CIFAR-10 result. The CIFAR-100 run probably had a bad\nhyperparameter setting so we are leaving it out.\n"
+    }
+  ],
+  "expect": {
+    "min_severity": "major",
+    "signals": [
+      {
+        "name": "identifies the omitted negative result",
+        "any": [
+          "cifar-100",
+          "cifar100",
+          "negative result",
+          "worse",
+          "omitted",
+          "excluded",
+          "left out",
+          "dropped",
+          "selective report",
+          "not reported"
+        ]
+      },
+      {
+        "name": "identifies the null result",
+        "any": [
+          "svhn",
+          "no difference",
+          "null",
+          "essentially identical",
+          "negligible",
+          "88.1",
+          "88.0"
+        ]
+      },
+      {
+        "name": "requires reporting all results",
+        "any": [
+          "report all",
+          "include",
+          "must be reported",
+          "disclose",
+          "present",
+          "should not be omitted",
+          "report the"
+        ]
+      }
+    ],
+    "forbidden": [
+      {
+        "name": "does not accept the hyperparameter excuse",
+        "any": [
+          "reasonable to exclude",
+          "acceptable to omit",
+          "justified in leaving it out",
+          "correctly excluded"
+        ]
+      }
+    ]
+  }
+}

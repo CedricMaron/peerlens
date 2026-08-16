@@ -1,0 +1,60 @@
+{
+  "id": "methodology_cannot_test_hypothesis",
+  "description": "A design that cannot discriminate the hypothesis from its negation is a blocker.",
+  "target": {
+    "kind": "section_review",
+    "section": "methodology"
+  },
+  "inputs": [
+    {
+      "label": "Method",
+      "content": "\nH1: Class-specialized teachers improve knowledge transfer BECAUSE specialization\nreduces gradient conflict between clients.\n\nMethodology: We train FedSpec on CIFAR-10 and measure final global model top-1\naccuracy. We compare against FedAvg accuracy. We do not measure gradient conflict,\ngradient alignment, or any intermediate quantity. We run one configuration.\n"
+    }
+  ],
+  "expect": {
+    "min_severity": "major",
+    "signals": [
+      {
+        "name": "identifies that the proposed mechanism is never measured",
+        "any": [
+          "gradient conflict",
+          "mechanism",
+          "not measured",
+          "does not measure",
+          "no measurement",
+          "intermediate",
+          "unmeasured",
+          "cannot observe"
+        ]
+      },
+      {
+        "name": "states the design cannot test the hypothesis as stated",
+        "any": [
+          "cannot test",
+          "cannot answer",
+          "unable to test",
+          "does not test",
+          "cannot establish",
+          "cannot distinguish",
+          "would be the same",
+          "no observation"
+        ]
+      },
+      {
+        "name": "recommends measuring the mechanism",
+        "any": [
+          "measure",
+          "instrument",
+          "record",
+          "quantif",
+          "report gradient",
+          "ablation",
+          "additional measurement",
+          "narrow the hypothesis",
+          "restate"
+        ]
+      }
+    ],
+    "forbidden": []
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "id": "confounded_experiment",
+  "description": "An experiment varying two factors at once cannot attribute the effect to either.",
+  "target": {
+    "kind": "section_review",
+    "section": "experiments"
+  },
+  "inputs": [
+    {
+      "label": "Experiment E4",
+      "content": "\nH1: Teacher specialization improves knowledge transfer.\n\nE4 compares:\n  Condition A: our specialized ensemble - 8 teachers, each specialized on 2 classes\n  Condition B: baseline - 1 non-specialized teacher\n\nResult: A reaches 74.8%, B reaches 71.2%. We conclude that specialization improves\nknowledge transfer.\n"
+    }
+  ],
+  "expect": {
+    "min_severity": "major",
+    "signals": [
+      {
+        "name": "identifies that two factors vary together",
+        "any": [
+          "confound",
+          "two factors",
+          "ensemble size",
+          "number of teachers",
+          "more than one",
+          "simultaneous",
+          "both",
+          "capacity",
+          "varies both",
+          "conflat"
+        ]
+      },
+      {
+        "name": "explains the attribution failure",
+        "any": [
+          "cannot attribute",
+          "cannot isolate",
+          "not attributable",
+          "cannot distinguish",
+          "cannot separate",
+          "cannot determine whether",
+          "unable to isolate",
+          "alternative explanation"
+        ]
+      },
+      {
+        "name": "recommends the matched control",
+        "any": [
+          "matched",
+          "same number of teachers",
+          "8 non-specialized",
+          "equal size",
+          "control condition",
+          "non-specialized ensemble",
+          "same ensemble size",
+          "ablation"
+        ]
+      }
+    ],
+    "forbidden": []
+  }
+}
