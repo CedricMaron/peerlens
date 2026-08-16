@@ -2,7 +2,8 @@
 name = "peerlens"
 version = "1.0.0"
 description = "AI-assisted scientific research quality control."
-readme = "../README.md"
+# No `readme` field: setuptools refuses to reference files outside this
+# directory, and the README lives at the repository root.
 requires-python = ">=3.11"
 license = { text = "MIT" }
 

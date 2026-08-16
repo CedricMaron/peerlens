@@ -29,7 +29,6 @@ COPY backend/requirements.txt ./
 RUN pip install -r requirements.txt
 
 COPY backend/ ./backend/
-COPY README.md ./
 RUN pip install --no-deps ./backend
 
 # ---------------------------------------------------------------------------
