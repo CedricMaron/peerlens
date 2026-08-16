@@ -24,12 +24,16 @@ if (Test-Path .env) {
     }
 }
 
+# Override with PEERLENS_PORT / PEERLENS_HOST if 8000 is already taken.
+$port = if ($env:PEERLENS_PORT) { $env:PEERLENS_PORT } else { "8000" }
+$bindHost = if ($env:PEERLENS_HOST) { $env:PEERLENS_HOST } else { "0.0.0.0" }
+
 if ($Prod) {
     Write-Host "==> Building the frontend"
     Push-Location frontend
     try { npm run build } finally { Pop-Location }
-    Write-Host "==> Serving PeerLens on http://localhost:8000" -ForegroundColor Green
-    & .\.venv\Scripts\uvicorn.exe peerlens.main:app --host 0.0.0.0 --port 8000
+    Write-Host "==> Serving PeerLens on http://localhost:$port" -ForegroundColor Green
+    & .\.venv\Scripts\uvicorn.exe peerlens.main:app --host $bindHost --port $port
     exit $LASTEXITCODE
 }
 
@@ -38,10 +42,10 @@ if (-not (Test-Path frontend\node_modules)) {
     exit 1
 }
 
-Write-Host "==> Starting the API on http://localhost:8000"
+Write-Host "==> Starting the API on http://localhost:$port"
 $backend = Start-Process -PassThru -NoNewWindow `
     -FilePath ".\.venv\Scripts\uvicorn.exe" `
-    -ArgumentList "peerlens.main:app", "--host", "127.0.0.1", "--port", "8000", "--reload"
+    -ArgumentList "peerlens.main:app", "--host", "127.0.0.1", "--port", $port, "--reload"
 
 try {
     Write-Host "==> Starting the frontend on http://localhost:5173" -ForegroundColor Green

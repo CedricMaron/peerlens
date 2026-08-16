@@ -218,6 +218,12 @@ everything from port 8000, exactly as the container does.
 
 Requirements: Python 3.11+, Node.js 20+.
 
+If port 8000 is already in use, set `PEERLENS_PORT` (both scripts honour it):
+
+```bash
+PEERLENS_PORT=8123 ./run.sh --prod
+```
+
 ## Architecture
 
 Deliberately lightweight. One process, one database file, no message queues, no
