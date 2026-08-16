@@ -1,0 +1,22 @@
+# Convenience only — `docker run` is enough to use PeerLens.
+#
+#   docker compose up -d
+#
+services:
+  peerlens:
+    image: ghcr.io/cedricmaron/peerlens:latest
+    # To build from a local checkout instead of pulling, uncomment:
+    # build: .
+    container_name: peerlens
+    ports:
+      - "8000:8000"
+    volumes:
+      - peerlens-data:/app/data
+    restart: unless-stopped
+    # Lets the container reach an Ollama instance running on the host at
+    # http://host.docker.internal:11434 (already available on Docker Desktop).
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+volumes:
+  peerlens-data:

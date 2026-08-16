@@ -17,7 +17,13 @@ from ..ai_schemas import ChallengeResult, ExtractionResult, ReviewResult
 from ..llm import client
 from ..models import Issue, PaperProject, ResearchInput, utcnow
 from ..prompts_loader import global_prompt, section_prompt
-from ..sections import SECTION_BY_KEY, SECTION_KEYS, SectionStatus, Severity
+from ..sections import (
+    SECTION_BY_KEY,
+    SECTION_KEYS,
+    SectionStatus,
+    Severity,
+    normalize_section_key,
+)
 from . import research_state
 
 logger = logging.getLogger("peerlens.analysis")
@@ -140,14 +146,22 @@ def _sync_issues(
             why_it_matters=entry.why_it_matters,
             evidence=entry.evidence,
             recommended_action=entry.recommended_action,
-            affected_sections=[
-                s for s in (entry.affected_sections or []) if s in SECTION_KEYS
-            ],
+            affected_sections=_normalize_sections(entry.affected_sections),
         )
         db.add(row)
         created.append(row)
     db.flush()
     return created
+
+
+def _normalize_sections(values: list[str] | None) -> list[str]:
+    """Resolve model-supplied section names, dropping anything unrecognisable."""
+    resolved: list[str] = []
+    for value in values or []:
+        key = normalize_section_key(value)
+        if key and key not in resolved:
+            resolved.append(key)
+    return [k for k in SECTION_KEYS if k in resolved]
 
 
 def _reconcile_status(reported: str, issues: list) -> str:
@@ -287,9 +301,7 @@ async def challenge_research(db: Session, paper: PaperProject) -> ChallengeResul
     for entry in result.issues:
         if entry.severity not in BLOCKING_SEVERITIES:
             continue
-        for key in entry.affected_sections:
-            if key not in SECTION_KEYS:
-                continue
+        for key in _normalize_sections(entry.affected_sections):
             state = research_state.get_section(db, paper.id, key)
             if state.status == SectionStatus.READY.value:
                 state.status = SectionStatus.NEEDS_ATTENTION.value

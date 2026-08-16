@@ -189,6 +189,47 @@ def dependents_of(key: str) -> list[str]:
     return [k for k in SECTION_KEYS if k in seen]
 
 
+# Models naturally refer to sections by their common names rather than by our
+# internal keys. Mapping these back is the difference between a cross-section
+# issue linking to the right section and being silently dropped.
+SECTION_ALIASES: dict[str, str] = {
+    "claim": "contribution",
+    "claims": "contribution",
+    "claims_and_contribution": "contribution",
+    "claims & contribution": "contribution",
+    "contributions": "contribution",
+    "state_of_the_art": "literature",
+    "state of the art": "literature",
+    "related_work": "literature",
+    "related work": "literature",
+    "prior_work": "literature",
+    "research_gap": "gap",
+    "research gap": "gap",
+    "research_question": "question",
+    "research question": "question",
+    "questions": "question",
+    "hypotheses": "hypothesis",
+    "method": "methodology",
+    "methods": "methodology",
+    "experiment": "experiments",
+    "experimental_setup": "experiments",
+    "result": "results",
+    "finding": "findings",
+    "limitation": "limitations",
+    "problems": "problem",
+}
+
+
+def normalize_section_key(value: str) -> str | None:
+    """Resolve a model-supplied section name to a canonical key, or None."""
+    if not value:
+        return None
+    candidate = value.strip().lower().replace("-", "_")
+    if candidate in SECTION_BY_KEY:
+        return candidate
+    return SECTION_ALIASES.get(candidate) or SECTION_ALIASES.get(candidate.replace("_", " "))
+
+
 # Item types stored in the research state, grouped by the section that owns them.
 SECTION_ITEM_TYPES: dict[str, str] = {
     "problem": "problem",

@@ -91,3 +91,21 @@ def test_available_prompts_covers_all_sections():
     available = prompts_loader.available_prompts()
     assert len(available["checklist"]) == 22
     assert "challenge_research.md" in available["global"]
+
+
+def test_section_aliases_resolve_to_canonical_keys():
+    """Models name sections their own way; those references must not be lost."""
+    from peerlens.sections import normalize_section_key
+
+    assert normalize_section_key("claims") == "contribution"
+    assert normalize_section_key("Claims & Contribution") == "contribution"
+    assert normalize_section_key("state_of_the_art") == "literature"
+    assert normalize_section_key("related work") == "literature"
+    assert normalize_section_key("method") == "methodology"
+    assert normalize_section_key("Experiments") == "experiments"
+    # Canonical keys pass through unchanged.
+    for key in SECTION_KEYS:
+        assert normalize_section_key(key) == key
+    # Anything unrecognisable is dropped rather than guessed at.
+    assert normalize_section_key("appendix") is None
+    assert normalize_section_key("") is None

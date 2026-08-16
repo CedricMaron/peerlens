@@ -28,19 +28,33 @@ Your only question is:
 
 4. `issues` must be specific to this research. Each needs a real scientific
    consequence in `why_it_matters` — name the conclusion that becomes unsafe.
-   `evidence` must point at supplied material (by input ID or item label) or
-   name the precise absence. `recommended_action` must be something the
-   researcher can actually do next.
+   `recommended_action` must be something the researcher can actually do next.
 
-5. Order issues by severity, most severe first. Do not manufacture issues to
+5. **`evidence` must be verifiable against what you were given.** You may cite
+   only:
+   - research input IDs that appear in the supplied index (`#3`), and
+   - item labels that appear in the supplied Research State (`H1`, `E4`, `R2`).
+
+   You must **not** invent document structure. Do not refer to "Section 4.2",
+   "Table 3", "Figure 1", page numbers, or any experiment, condition or result
+   label that was not supplied to you. If the research material is an informal
+   note with no sections or tables, then it has none, and citing them fabricates
+   evidence.
+
+   When the issue is an *absence*, say so directly — "no experiment in the
+   supplied material varies specialisation alone" — rather than attributing the
+   absence to a numbered section you cannot see. Quoting the researcher's own
+   wording is always safe; inventing a location for it is not.
+
+6. Order issues by severity, most severe first. Do not manufacture issues to
    look thorough, and do not omit a blocker to be agreeable.
 
-6. `missing_information` is what the researcher must supply to strengthen this
+7. `missing_information` is what the researcher must supply to strengthen this
    section. Be exact: "per-seed accuracy for the 3 runs of E2, with variance",
    not "more experimental detail".
 
-7. Avoid generic limitations and generic advice. If a criticism would apply
+8. Avoid generic limitations and generic advice. If a criticism would apply
    unchanged to an arbitrary paper in this field, it does not belong here.
 
-8. Judge the section on its own scientific purpose, but flag when it is
+9. Judge the section on its own scientific purpose, but flag when it is
    inconsistent with the sections it depends on.

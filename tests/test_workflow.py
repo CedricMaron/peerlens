@@ -314,3 +314,39 @@ def test_research_data_survives_a_restart(client):
     with TestClient(app) as restarted:
         inputs = restarted.get(f"/api/papers/{paper_id}/inputs").json()
         assert [i["label"] for i in inputs] == ["keep me"]
+
+
+def test_challenge_maps_aliased_section_names(client, scripted):
+    """A blocker reported against "claims" must still reach Claims & Contribution."""
+    paper_id = setup_paper(client)
+    client.post(f"/api/papers/{paper_id}/inputs", json={"label": "x", "content": "content"})
+
+    scripted([extraction_json("C1", "a claim"), review_json("ready", severity=None)])
+    client.post(f"/api/papers/{paper_id}/sections/contribution/recheck")
+
+    scripted(
+        [
+            json.dumps(
+                {
+                    "overall_assessment": "The claim exceeds the evidence.",
+                    "issues": [
+                        {
+                            "severity": "blocker",
+                            "issue": "Claim is unsupported.",
+                            "why_it_matters": "The chain breaks at the result.",
+                            "evidence": "No result supports C1.",
+                            "recommended_action": "Narrow the claim.",
+                            "affected_sections": ["claims", "state_of_the_art", "appendix"],
+                        }
+                    ],
+                    "cross_section_observations": [],
+                }
+            )
+        ]
+    )
+    result = client.post(f"/api/papers/{paper_id}/challenge").json()
+    # "claims" -> contribution, "state_of_the_art" -> literature, "appendix" dropped.
+    assert result["issues"][0]["affected_sections"] == ["literature", "contribution"]
+
+    detail = client.get(f"/api/papers/{paper_id}/sections/contribution").json()
+    assert detail["status"] == "needs_attention"
