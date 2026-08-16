@@ -189,10 +189,15 @@ your model — installed models are detected automatically.
 Running PeerLens in Docker and Ollama on the host? Use
 `http://host.docker.internal:11434`.
 
-> Local models are slower and less capable than frontier cloud models. On a
-> small local model expect several minutes per scientific review, and read its
-> criticism more sceptically — smaller models are more prone to citing evidence
-> that is not there. The default timeout is 15 minutes for this reason.
+> **Expectations for local models.** They are slower and less capable than
+> frontier cloud models. On an 8B model running on CPU, expect several minutes
+> per section review and considerably longer for manuscript compilation — the
+> default timeout is 15 minutes for that reason, and you may need to raise
+> `PEERLENS_LLM_TIMEOUT` further. Read their criticism more sceptically: smaller
+> models are more prone to citing evidence that is not in your material, and may
+> omit a requested manuscript section. Local models are genuinely useful for
+> extraction and for a first pass; for the Challenge review and final
+> compilation, a frontier model is meaningfully better.
 
 ## Native development setup
 
