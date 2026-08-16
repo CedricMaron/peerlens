@@ -2,6 +2,10 @@
 # Safe to run repeatedly. Installs nothing globally.
 #
 #   .\setup.ps1
+#
+# If Windows blocks this script ("running scripts is disabled on this system"),
+# run it as:
+#   powershell -ExecutionPolicy Bypass -File .\setup.ps1
 
 $ErrorActionPreference = 'Stop'
 Set-Location $PSScriptRoot
@@ -53,14 +57,7 @@ Write-Ok "Frontend dependencies installed"
 # --- Data directory and database -----------------------------------------
 Write-Info "Initializing data directory and database"
 New-Item -ItemType Directory -Force -Path data\uploads | Out-Null
-& .\.venv\Scripts\python.exe -c @"
-import sys; sys.path.insert(0, 'backend')
-from peerlens.db import init_db
-from peerlens import config
-init_db()
-print(f'  database: {config.DB_PATH}')
-print(f'  uploads:  {config.UPLOAD_DIR}')
-"@
+& .\.venv\Scripts\python.exe -m peerlens.initialize
 Write-Ok "SQLite initialized"
 
 Write-Host ""

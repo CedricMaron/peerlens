@@ -52,14 +52,7 @@ ok "Frontend dependencies installed"
 # --- Data directory and database -----------------------------------------
 info "Initializing data directory and database"
 mkdir -p data/uploads
-./.venv/bin/python -c "
-import sys; sys.path.insert(0, 'backend')
-from peerlens.db import init_db
-from peerlens import config
-init_db()
-print(f'  database: {config.DB_PATH}')
-print(f'  uploads:  {config.UPLOAD_DIR}')
-"
+./.venv/bin/python -m peerlens.initialize
 ok "SQLite initialized"
 
 echo

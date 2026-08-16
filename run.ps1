@@ -2,6 +2,9 @@
 #
 #   .\run.ps1          backend on :8000 + Vite dev server on :5173 (hot reload)
 #   .\run.ps1 -Prod    build the frontend and serve everything from :8000
+#
+# If Windows blocks this script, run it as:
+#   powershell -ExecutionPolicy Bypass -File .\run.ps1
 
 param([switch]$Prod)
 

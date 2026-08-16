@@ -217,6 +217,21 @@ For contributors. Docker remains the recommended path for normal use.
 .\run.ps1
 ```
 
+Windows blocks unsigned scripts by default. If you see *"running scripts is
+disabled on this system"*, either run them explicitly:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\setup.ps1
+powershell -ExecutionPolicy Bypass -File .\run.ps1
+```
+
+or allow local scripts once, for your user only:
+
+```powershell
+Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+Unblock-File .\setup.ps1, .\run.ps1
+```
+
 Both setup scripts are safe to run repeatedly and install nothing globally.
 Use `./run.sh --prod` (or `.\run.ps1 -Prod`) to build the frontend and serve
 everything from port 8000, exactly as the container does.
