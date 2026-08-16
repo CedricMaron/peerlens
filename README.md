@@ -1,5 +1,9 @@
 # PeerLens
 
+[![CI](https://github.com/CedricMaron/peerlens/actions/workflows/ci.yml/badge.svg)](https://github.com/CedricMaron/peerlens/actions/workflows/ci.yml)
+[![Docker](https://github.com/CedricMaron/peerlens/actions/workflows/docker.yml/badge.svg)](https://github.com/CedricMaron/peerlens/actions/workflows/docker.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 **AI-assisted scientific research quality control.**
 
 Add ideas, literature, experiments and results as your research evolves.
