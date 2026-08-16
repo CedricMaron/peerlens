@@ -3,7 +3,24 @@
 from __future__ import annotations
 
 import abc
+import re
 from dataclasses import dataclass, field
+
+_REASONING_BLOCK = re.compile(r"<(think|thinking|reasoning)>.*?</\1>", re.DOTALL | re.IGNORECASE)
+
+
+def strip_reasoning(text: str) -> str:
+    """Remove reasoning blocks that local reasoning models emit inline.
+
+    PeerLens shows structured conclusions, never a model's internal monologue.
+    """
+    if not text:
+        return text
+    cleaned = _REASONING_BLOCK.sub("", text)
+    # An unterminated opening tag means the response was cut off mid-reasoning.
+    if "<think>" in cleaned.lower() and "</think>" not in cleaned.lower():
+        cleaned = re.split(r"<think>", cleaned, flags=re.IGNORECASE)[0]
+    return cleaned.strip()
 
 
 class LLMError(RuntimeError):
@@ -66,7 +83,9 @@ class LLMProvider(abc.ABC):
             result = await self.complete(
                 system="You are a connectivity probe.",
                 user="Reply with the single word: ok",
-                max_tokens=16,
+                # Generous budget: local reasoning models spend tokens thinking
+                # before they answer, and an empty reply looks like a failure.
+                max_tokens=512,
                 temperature=0.0,
             )
         except LLMError as exc:

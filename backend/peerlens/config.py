@@ -60,7 +60,9 @@ ENV_PROVIDER_CONFIG = {
     },
 }
 
-LLM_TIMEOUT_SECONDS = float(os.environ.get("PEERLENS_LLM_TIMEOUT", 300))
+# Generous by default: local reasoning models on CPU can take many minutes per
+# scientific review, and a timeout mid-analysis is worse than a slow answer.
+LLM_TIMEOUT_SECONDS = float(os.environ.get("PEERLENS_LLM_TIMEOUT", 900))
 OPENALEX_MAILTO = os.environ.get("PEERLENS_OPENALEX_MAILTO", "")
 
 

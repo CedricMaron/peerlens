@@ -11,7 +11,7 @@ from typing import Any
 import httpx
 
 from ..config import LLM_TIMEOUT_SECONDS
-from .base import LLMError, LLMProvider, LLMResult, LLMUsage
+from .base import LLMError, LLMProvider, LLMResult, LLMUsage, strip_reasoning
 
 JSON_INSTRUCTION = (
     "Respond with a single valid JSON object and nothing else. "
@@ -81,7 +81,7 @@ class OpenAIProvider(LLMProvider):
             cached_tokens=details.get("cached_tokens"),
         )
         return LLMResult(
-            text=text,
+            text=strip_reasoning(text),
             provider=self.name,
             model=data.get("model") or self.model,
             usage=usage,
@@ -184,7 +184,7 @@ class AnthropicProvider(LLMProvider):
             cached_tokens=cached,
         )
         return LLMResult(
-            text=text,
+            text=strip_reasoning(text),
             provider=self.name,
             model=data.get("model") or self.model,
             usage=usage,
@@ -241,7 +241,7 @@ class OllamaProvider(LLMProvider):
             cached_tokens=None,
         )
         return LLMResult(
-            text=text,
+            text=strip_reasoning(text),
             provider=self.name,
             model=data.get("model") or self.model,
             usage=usage,
