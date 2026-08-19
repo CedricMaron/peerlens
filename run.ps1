@@ -35,7 +35,8 @@ if ($Prod) {
     Write-Host "==> Building the frontend"
     Push-Location frontend
     try { npm run build } finally { Pop-Location }
-    Write-Host "==> Serving PeerLens on http://localhost:$port" -ForegroundColor Green
+    Write-Host "==> Serving PeerLens on http://peerlens.localhost:$port" -ForegroundColor Green
+    Write-Host "    (or http://localhost:$port - browsers resolve any *.localhost name themselves)"
     & .\.venv\Scripts\uvicorn.exe peerlens.main:app --host $bindHost --port $port
     exit $LASTEXITCODE
 }
@@ -51,7 +52,7 @@ $backend = Start-Process -PassThru -NoNewWindow `
     -ArgumentList "peerlens.main:app", "--host", "127.0.0.1", "--port", $port, "--reload"
 
 try {
-    Write-Host "==> Starting the frontend on http://localhost:5173" -ForegroundColor Green
+    Write-Host "==> Starting the frontend on http://peerlens.localhost:5173" -ForegroundColor Green
     Write-Host "    (Ctrl-C stops both.)"
     Push-Location frontend
     try { npm run dev } finally { Pop-Location }

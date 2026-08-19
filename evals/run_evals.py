@@ -152,7 +152,10 @@ async def run_case(case: dict, db) -> CaseResult:
 
 async def main() -> int:
     parser = argparse.ArgumentParser(description="Run PeerLens scientific evals.")
-    parser.add_argument("--provider", choices=["openai", "anthropic", "ollama"])
+    parser.add_argument(
+        "--provider",
+        choices=["claude-code", "codex", "anthropic", "openai", "ollama"],
+    )
     parser.add_argument("--model")
     parser.add_argument("--api-key")
     parser.add_argument("--base-url")

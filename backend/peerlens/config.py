@@ -58,6 +58,18 @@ ENV_PROVIDER_CONFIG = {
         "model": os.environ.get("OLLAMA_MODEL"),
         "base_url": os.environ.get("OLLAMA_BASE_URL"),
     },
+    # Account-backed CLI providers hold their own credentials; only an optional
+    # model override is configurable here.
+    "claude-code": {
+        "api_key": None,
+        "model": os.environ.get("PEERLENS_CLAUDE_CODE_MODEL"),
+        "base_url": None,
+    },
+    "codex": {
+        "api_key": None,
+        "model": os.environ.get("PEERLENS_CODEX_MODEL"),
+        "base_url": None,
+    },
 }
 
 # Generous by default: local reasoning models on CPU can take many minutes per

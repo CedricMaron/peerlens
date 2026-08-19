@@ -7,7 +7,6 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from ..db import get_db
-from ..llm.base import LLMError
 from ..models import Manuscript, PaperProject
 from ..schemas import CompileGate, ManuscriptOut
 from ..services import manuscript as manuscript_service
@@ -36,8 +35,6 @@ async def compile_manuscript(
                 "reasons": exc.reasons,
             },
         ) from exc
-    except LLMError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
     return ManuscriptOut.model_validate(result)
 
 

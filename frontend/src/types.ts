@@ -139,6 +139,7 @@ export interface ChallengeResult {
   overall_assessment: string
   cross_section_observations: string[]
   issues: Issue[]
+  meta?: RunMeta | null
 }
 
 export interface AnalyzeResponse {
@@ -146,6 +147,7 @@ export interface AnalyzeResponse {
   reviewed: string[]
   errors: Record<string, string>
   readiness: Readiness
+  meta?: RunMeta | null
 }
 
 export interface LiteratureSearchResult {
@@ -202,6 +204,11 @@ export interface Manuscript {
 
 export interface ProviderSettings {
   provider: string
+  label: string
+  kind: string
+  is_local: boolean
+  needs_api_key: boolean
+  requires_model: boolean
   model: string
   base_url: string
   api_key_hint: string
@@ -209,6 +216,76 @@ export interface ProviderSettings {
   from_environment: boolean
   configured: boolean
   defaults: { models: Record<string, string>; base_urls: Record<string, string> }
+}
+
+/** One row of Settings → AI Provider. */
+export interface ProviderStatus {
+  id: string
+  label: string
+  kind: 'cli' | 'api' | 'local' | string
+  blurb: string
+  setup_hint: string
+  state:
+    | 'ready'
+    | 'not_installed'
+    | 'not_authenticated'
+    | 'not_configured'
+    | 'unavailable'
+    | 'unknown'
+    | 'error'
+  message: string
+  installed: boolean | null
+  authenticated: boolean | null
+  configured: boolean
+  available: boolean
+  version: string
+  model: string
+  needs_api_key: boolean
+  requires_model: boolean
+  supports_login: boolean
+  is_local: boolean
+  is_subscription: boolean
+  api_key_set: boolean
+  api_key_hint: string
+  base_url: string
+  is_active: boolean
+}
+
+export interface ProviderStatusList {
+  active_provider: string
+  providers: ProviderStatus[]
+}
+
+export type LoginState =
+  | 'IDLE'
+  | 'LOGIN_STARTED'
+  | 'LOGIN_SUCCESS'
+  | 'LOGIN_FAILED'
+  | 'LOGIN_CANCELLED'
+  | 'LOGIN_ALREADY_RUNNING'
+  | 'CLI_NOT_INSTALLED'
+
+export interface LoginStatus {
+  provider: string
+  state: LoginState
+  message: string
+  url: string
+  running: boolean
+}
+
+/** Provider metadata retained with a generated analysis, for reproducibility. */
+export interface RunMeta {
+  task_type: string
+  operation?: string
+  provider: string
+  model: string | null
+  created_at: string
+  duration_ms: number | null
+  usage: {
+    input_tokens: number | null
+    output_tokens: number | null
+    cached_tokens: number | null
+  }
 }
 
 export interface UsageTotals {

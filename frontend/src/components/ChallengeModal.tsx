@@ -68,6 +68,18 @@ export default function ChallengeModal({
         <div className="card" style={{ marginBottom: '0.85rem' }}>
           <div className="card-title">Overall assessment</div>
           <p style={{ margin: 0 }}>{result.overall_assessment}</p>
+          {result.meta && (
+            <p className="dim" style={{ margin: '0.5rem 0 0' }}>
+              Produced by <strong>{result.meta.provider}</strong>
+              {result.meta.model ? ` · ${result.meta.model}` : ''}
+              {result.meta.duration_ms !== null
+                ? ` · ${Math.round(result.meta.duration_ms / 1000)}s`
+                : ''}
+              {result.meta.usage.output_tokens === null
+                ? ' · token counts not reported by this provider'
+                : ''}
+            </p>
+          )}
         </div>
       )}
 

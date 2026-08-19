@@ -7,7 +7,6 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from ..db import get_db
-from ..llm.base import LLMError
 from ..models import LiteratureItem, PaperLiterature, PaperProject, ResearchBranch
 from ..schemas import (
     LiteratureAnalysisOut,
@@ -189,8 +188,5 @@ def list_paper_literature(
 
 @router.post("/papers/{paper_id}/literature/analyze", response_model=LiteratureAnalysisOut)
 async def analyze(paper: PaperProject = Depends(get_paper), db: Session = Depends(get_db)):
-    try:
-        result = await literature.analyze_literature(db, paper)
-    except LLMError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    result = await literature.analyze_literature(db, paper)
     return LiteratureAnalysisOut(**result.model_dump())

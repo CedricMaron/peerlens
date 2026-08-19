@@ -7,9 +7,11 @@ import type {
   LiteratureAnalysis,
   LiteratureItem,
   LiteratureSearchResult,
+  LoginStatus,
   Manuscript,
   PaperSummary,
   ProviderSettings,
+  ProviderStatusList,
   Readiness,
   ResearchInputListItem,
   ResearchItem,
@@ -156,9 +158,30 @@ export const api = {
 
   // Settings
   getProvider: () => get<ProviderSettings>('/settings/provider'),
-  saveProvider: (body: { provider: string; model: string; api_key?: string; base_url?: string }) =>
-    put<ProviderSettings>('/settings/provider', body),
-  clearApiKey: () => del<ProviderSettings>('/settings/provider/key'),
+  listProviders: () => get<ProviderStatusList>('/settings/providers'),
+  selectProvider: (id: string) =>
+    post<ProviderSettings>(`/settings/providers/${id}/select`),
+  saveProvider: (body: {
+    provider: string
+    model: string
+    api_key?: string
+    base_url?: string
+    /** Save without switching the active provider (default: switch). */
+    make_active?: boolean
+  }) => put<ProviderSettings>('/settings/provider', body),
+  clearApiKey: (provider?: string) =>
+    del<ProviderSettings>(
+      `/settings/provider/key${provider ? `?provider=${encodeURIComponent(provider)}` : ''}`,
+    ),
+
+  // Provider login (the official CLI owns the flow; PeerLens only watches it)
+  startLogin: (id: string) => post<LoginStatus>(`/settings/providers/${id}/login`),
+  loginStatus: (id: string) => get<LoginStatus>(`/settings/providers/${id}/login`),
+  cancelLogin: (id: string) => del<LoginStatus>(`/settings/providers/${id}/login`),
+
+  // In-flight AI requests
+  cancelPaperRequests: (paperId: number) =>
+    post<{ cancelled: string[] }>(`/ai/papers/${paperId}/cancel`),
   testProvider: (body: {
     provider?: string
     model?: string

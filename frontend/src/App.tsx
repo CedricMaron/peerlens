@@ -48,11 +48,20 @@ function TopBar() {
       </nav>
       <div className="topbar-right">
         {provider && (
-          <span className={`provider-chip${provider.configured ? '' : ' warn'}`}>
+          <span
+            className={`provider-chip${provider.configured ? '' : ' warn'}`}
+            title={
+              provider.configured
+                ? `Current AI provider: ${provider.label}${provider.is_local ? ' (local)' : ''}`
+                : 'Open Settings → AI Provider to use Claude Code, OpenAI Codex, Anthropic API, OpenAI API, or a local Ollama model'
+            }
+          >
             {provider.configured ? (
-              <>
-                {provider.provider} · {provider.model}
-              </>
+              <Link to="/settings">
+                {provider.label || provider.provider}
+                {provider.model ? ` · ${provider.model}` : ''}
+                {provider.is_local ? ' · local' : ''}
+              </Link>
             ) : (
               <Link to="/settings">No AI provider configured</Link>
             )}

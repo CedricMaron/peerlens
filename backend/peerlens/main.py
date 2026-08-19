@@ -17,7 +17,7 @@ from starlette.requests import Request
 
 from . import config
 from .db import init_db
-from .llm.base import LLMError
+from .llm.base import ErrorCode, LLMError
 from .routers import (
     checklist,
     literature_router,
@@ -58,6 +58,9 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:5173",
         "http://127.0.0.1:5173",
+        # Browsers resolve any *.localhost name to loopback, and PeerLens
+        # advertises this one so it stands out among other local tools.
+        "http://peerlens.localhost:5173",
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -67,8 +70,15 @@ app.add_middleware(
 
 @app.exception_handler(LLMError)
 async def handle_llm_error(_: Request, exc: LLMError) -> JSONResponse:
-    """Provider misconfiguration is a user-fixable problem, not a server fault."""
-    return JSONResponse(status_code=400, content={"detail": str(exc)})
+    """Provider misconfiguration is a user-fixable problem, not a server fault.
+
+    ``detail`` stays a plain sentence for the UI; ``code`` is the normalized
+    classification. Provider stderr stays in the server log.
+    """
+    status = 499 if exc.code == ErrorCode.REQUEST_CANCELLED.value else 400
+    if exc.detail:
+        logger.warning("Provider error [%s]: %s", exc.code, exc.detail[:2000])
+    return JSONResponse(status_code=status, content={"detail": str(exc), "code": exc.code})
 
 
 for router in (

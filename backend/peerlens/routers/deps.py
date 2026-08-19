@@ -6,7 +6,6 @@ from fastapi import Depends, HTTPException, Path
 from sqlalchemy.orm import Session
 
 from ..db import get_db
-from ..llm.base import LLMError
 from ..models import PaperProject, ResearchBranch
 
 
@@ -26,8 +25,3 @@ def get_paper(
     if paper is None:
         raise HTTPException(status_code=404, detail="Paper project not found")
     return paper
-
-
-def llm_http_error(exc: LLMError) -> HTTPException:
-    """Provider problems are the user's to fix, so surface them as 400s."""
-    return HTTPException(status_code=400, detail=str(exc))

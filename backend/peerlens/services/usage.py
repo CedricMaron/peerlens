@@ -147,6 +147,37 @@ def breakdown(
     return rows
 
 
+def last_event_meta(db: Session, paper_id: int, operation: str | None = None) -> dict | None:
+    """Reproducibility metadata for the most recent call on this paper.
+
+    Which provider and model produced an analysis is part of the record. Token
+    counts the provider did not report stay ``null`` — never estimated.
+    """
+    from ..llm.client import task_type_for
+
+    query = select(AIUsageEvent).where(AIUsageEvent.paper_id == paper_id)
+    if operation is not None:
+        query = query.where(AIUsageEvent.operation == operation)
+    event = db.scalars(
+        query.order_by(AIUsageEvent.created_at.desc(), AIUsageEvent.id.desc()).limit(1)
+    ).first()
+    if event is None:
+        return None
+    return {
+        "task_type": task_type_for(event.operation),
+        "operation": event.operation,
+        "provider": event.provider,
+        "model": event.model or None,
+        "created_at": event.created_at.isoformat(),
+        "duration_ms": event.latency_ms,
+        "usage": {
+            "input_tokens": event.input_tokens,
+            "output_tokens": event.output_tokens,
+            "cached_tokens": event.cached_tokens,
+        },
+    }
+
+
 def recent_events(db: Session, limit: int = 100, paper_id: int | None = None) -> list[AIUsageEvent]:
     query = select(AIUsageEvent).order_by(AIUsageEvent.created_at.desc()).limit(limit)
     if paper_id is not None:

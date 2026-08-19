@@ -21,7 +21,8 @@ HOST="${PEERLENS_HOST:-0.0.0.0}"
 if [ "${1:-}" = "--prod" ]; then
   echo "${BOLD}==>${OFF} Building the frontend"
   (cd frontend && npm run build)
-  echo "${BOLD}==>${OFF} Serving PeerLens on ${GREEN}http://localhost:${PORT}${OFF}"
+  echo "${BOLD}==>${OFF} Serving PeerLens on ${GREEN}http://peerlens.localhost:${PORT}${OFF}"
+  echo "    (or http://localhost:${PORT} — browsers resolve any *.localhost name themselves)"
   exec ./.venv/bin/uvicorn peerlens.main:app --host "$HOST" --port "$PORT"
 fi
 
@@ -34,6 +35,6 @@ echo "${BOLD}==>${OFF} Starting the API on http://localhost:${PORT}"
 ./.venv/bin/uvicorn peerlens.main:app --host 127.0.0.1 --port "$PORT" --reload &
 BACKEND_PID=$!
 
-echo "${BOLD}==>${OFF} Starting the frontend on ${GREEN}http://localhost:5173${OFF}"
+echo "${BOLD}==>${OFF} Starting the frontend on ${GREEN}http://peerlens.localhost:5173${OFF}"
 echo "    (Ctrl-C stops both.)"
 cd frontend && npm run dev

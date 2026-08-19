@@ -43,6 +43,12 @@ def lookup(model: str, overrides: dict[str, list[float]] | None = None) -> tuple
     return best
 
 
+#: Providers billed through a Claude/ChatGPT subscription. Per-request cost is
+#: not a meaningful number there, so it is reported as unknown rather than as a
+#: per-token estimate the user was never charged.
+SUBSCRIPTION_PROVIDERS = {"claude-code", "codex"}
+
+
 def estimate_cost(
     provider: str,
     model: str,
@@ -54,6 +60,8 @@ def estimate_cost(
     """Return an estimated USD cost, or ``None`` when it cannot be known."""
     if is_local or provider == "ollama":
         return 0.0  # locally hosted: no per-token billing
+    if provider in SUBSCRIPTION_PROVIDERS:
+        return None  # covered by the subscription; not a per-token charge
     if input_tokens is None and output_tokens is None:
         return None
     price = lookup(model, overrides)

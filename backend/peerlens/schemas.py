@@ -213,12 +213,15 @@ class AnalyzeResponse(BaseModel):
     reviewed: list[str]
     errors: dict[str, str]
     readiness: ReadinessOut
+    #: Which provider produced this analysis. Unreported values stay null.
+    meta: dict[str, Any] | None = None
 
 
 class ChallengeOut(BaseModel):
     overall_assessment: str
     cross_section_observations: list[str]
     issues: list[IssueOutSchema]
+    meta: dict[str, Any] | None = None
 
 
 # --------------------------------------------------------------------------
@@ -308,14 +311,24 @@ class ManuscriptOut(ORMModel):
 # --------------------------------------------------------------------------
 
 class ProviderSettingsIn(BaseModel):
-    provider: Literal["openai", "anthropic", "ollama"]
-    model: str = Field(min_length=1)
+    provider: str = Field(min_length=1)
+    # Account-backed providers (Claude Code, Codex) use their own default model,
+    # so an empty model is valid for them.
+    model: str = ""
     api_key: str | None = None
     base_url: str | None = None
+    #: Save without switching to this provider. It is still activated when no
+    #: provider is configured yet.
+    make_active: bool = True
 
 
 class ProviderSettingsOut(BaseModel):
     provider: str
+    label: str = ""
+    kind: str = ""
+    is_local: bool = False
+    needs_api_key: bool = False
+    requires_model: bool = False
     model: str
     base_url: str
     api_key_hint: str
@@ -326,7 +339,7 @@ class ProviderSettingsOut(BaseModel):
 
 
 class TestConnectionRequest(BaseModel):
-    provider: Literal["openai", "anthropic", "ollama"] | None = None
+    provider: str | None = None
     model: str | None = None
     api_key: str | None = None
     base_url: str | None = None
@@ -335,6 +348,58 @@ class TestConnectionRequest(BaseModel):
 class TestConnectionResult(BaseModel):
     ok: bool
     message: str
+
+
+class ProviderStatusOut(BaseModel):
+    """One row of Settings -> AI Provider."""
+
+    id: str
+    label: str
+    kind: str
+    blurb: str
+    setup_hint: str
+    state: str
+    message: str
+    installed: bool | None
+    authenticated: bool | None
+    configured: bool
+    available: bool
+    version: str
+    model: str
+    needs_api_key: bool
+    requires_model: bool
+    supports_login: bool
+    is_local: bool
+    is_subscription: bool
+    api_key_set: bool
+    api_key_hint: str
+    base_url: str
+    is_active: bool
+
+
+class ProviderStatusList(BaseModel):
+    active_provider: str
+    providers: list[ProviderStatusOut]
+
+
+class LoginStateOut(BaseModel):
+    provider: str
+    state: str
+    message: str = ""
+    url: str = ""
+    running: bool = False
+
+
+class ActiveRequestOut(BaseModel):
+    request_id: str
+    provider: str
+    task_type: str
+    paper_id: int | None
+    running_for_ms: int
+
+
+class CancelResult(BaseModel):
+    cancelled: list[str]
 
 
 # --------------------------------------------------------------------------

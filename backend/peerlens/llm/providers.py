@@ -11,7 +11,16 @@ from typing import Any
 import httpx
 
 from ..config import LLM_TIMEOUT_SECONDS
-from .base import LLMError, LLMProvider, LLMResult, LLMUsage, strip_reasoning
+from .base import (
+    ErrorCode,
+    LLMError,
+    LLMProvider,
+    LLMResult,
+    LLMUsage,
+    ProviderStatus,
+    strip_reasoning,
+)
+from .errors import classify_http_status
 
 JSON_INSTRUCTION = (
     "Respond with a single valid JSON object and nothing else. "
@@ -29,7 +38,8 @@ def _timeout_error(provider: str, exc: Exception) -> LLMError:
         f"{provider} did not respond within {LLM_TIMEOUT_SECONDS:.0f}s. "
         "Scientific reviews send a large prompt, and local models on CPU can "
         "exceed this. Raise PEERLENS_LLM_TIMEOUT, use a smaller or faster model, "
-        f"or reduce the amount of research material. ({type(exc).__name__})"
+        f"or reduce the amount of research material. ({type(exc).__name__})",
+        ErrorCode.REQUEST_TIMEOUT,
     )
 
 
@@ -40,10 +50,34 @@ def _http_error(provider: str, response: httpx.Response) -> LLMError:
         detail = str(payload.get("error") or payload.get("message") or payload)[:600]
     except Exception:  # noqa: BLE001 - non-JSON error body
         pass
-    return LLMError(f"{provider} API error {response.status_code}: {detail}")
+    return LLMError(
+        f"{provider} API error {response.status_code}: {detail}",
+        classify_http_status(response.status_code, detail),
+        detail=detail,
+    )
 
 
-class OpenAIProvider(LLMProvider):
+class _APIKeyProvider(LLMProvider):
+    """Shared status reporting for key-based cloud APIs.
+
+    A key-based provider is "configured" when a key is stored. Whether that key
+    is *valid* is only knowable by making a request, which Settings -> Test
+    Connection does explicitly rather than on every status poll.
+    """
+
+    async def status(self) -> ProviderStatus:
+        configured = bool(self.config.api_key)
+        return ProviderStatus(
+            id=self.name,
+            name=self.name,
+            state="ready" if configured else "not_configured",
+            message="" if configured else "No API key stored.",
+            configured=configured,
+            model=self.model,
+        )
+
+
+class OpenAIProvider(_APIKeyProvider):
     name = "openai"
 
     async def complete(
@@ -56,7 +90,10 @@ class OpenAIProvider(LLMProvider):
         temperature: float = 0.2,
     ) -> LLMResult:
         if not self.config.api_key:
-            raise LLMError("OpenAI API key is not configured (Settings -> AI Provider).")
+            raise LLMError(
+                "OpenAI API key is not configured (Settings -> AI Provider).",
+                ErrorCode.NOT_CONFIGURED,
+            )
         base = (self.config.base_url or "https://api.openai.com/v1").rstrip("/")
         if system and json_mode:
             system = f"{system}\n\n{JSON_INSTRUCTION}"
@@ -84,7 +121,10 @@ class OpenAIProvider(LLMProvider):
         try:
             text = data["choices"][0]["message"]["content"] or ""
         except (KeyError, IndexError, TypeError) as exc:
-            raise LLMError(f"Unexpected OpenAI response shape: {str(data)[:300]}") from exc
+            raise LLMError(
+                f"Unexpected OpenAI response shape: {str(data)[:300]}",
+                ErrorCode.INVALID_OUTPUT,
+            ) from exc
 
         usage_raw = data.get("usage") or {}
         details = usage_raw.get("prompt_tokens_details") or {}
@@ -134,10 +174,13 @@ class OpenAIProvider(LLMProvider):
                 adjusted = True
             if not adjusted:
                 raise _http_error("OpenAI", response)
-        raise LLMError("OpenAI rejected the request after parameter adaptation.")
+        raise LLMError(
+            "OpenAI rejected the request after parameter adaptation.",
+            ErrorCode.UNKNOWN_PROVIDER_ERROR,
+        )
 
 
-class AnthropicProvider(LLMProvider):
+class AnthropicProvider(_APIKeyProvider):
     name = "anthropic"
 
     async def complete(
@@ -150,7 +193,10 @@ class AnthropicProvider(LLMProvider):
         temperature: float = 0.2,
     ) -> LLMResult:
         if not self.config.api_key:
-            raise LLMError("Anthropic API key is not configured (Settings -> AI Provider).")
+            raise LLMError(
+                "Anthropic API key is not configured (Settings -> AI Provider).",
+                ErrorCode.NOT_CONFIGURED,
+            )
         base = (self.config.base_url or "https://api.anthropic.com").rstrip("/")
         if json_mode:
             system = f"{system}\n\n{JSON_INSTRUCTION}"
@@ -248,7 +294,8 @@ class OllamaProvider(LLMProvider):
         except httpx.ConnectError as exc:
             raise LLMError(
                 f"Cannot reach Ollama at {base}. Is `ollama serve` running? "
-                "From Docker, use http://host.docker.internal:11434."
+                "From Docker, use http://host.docker.internal:11434.",
+                ErrorCode.PROVIDER_UNAVAILABLE,
             ) from exc
         latency_ms = int((time.perf_counter() - started) * 1000)
 
@@ -267,12 +314,41 @@ class OllamaProvider(LLMProvider):
             is_local=True,
         )
 
-
-PROVIDERS: dict[str, type[LLMProvider]] = {
-    "openai": OpenAIProvider,
-    "anthropic": AnthropicProvider,
-    "ollama": OllamaProvider,
-}
+    async def status(self) -> ProviderStatus:
+        """Local and cheap to check: is the daemon actually answering?"""
+        base = (self.config.base_url or "http://localhost:11434").rstrip("/")
+        try:
+            async with httpx.AsyncClient(timeout=httpx.Timeout(5.0)) as client:
+                response = await client.get(f"{base}/api/tags")
+                response.raise_for_status()
+                installed = [
+                    m.get("name", "") for m in response.json().get("models", []) if m.get("name")
+                ]
+        except Exception:  # noqa: BLE001 - unreachable is a normal, reportable state
+            return ProviderStatus(
+                id=self.name,
+                name=self.name,
+                state="unavailable",
+                message=f"No Ollama server answering at {base}. Run `ollama serve`.",
+                configured=bool(self.model),
+                model=self.model,
+            )
+        if not self.model:
+            return ProviderStatus(
+                id=self.name, name=self.name, state="not_configured",
+                message="Running, but no model selected.", configured=False,
+            )
+        message = "Running." if self.model in installed else (
+            f"Running, but '{self.model}' is not installed locally."
+        )
+        return ProviderStatus(
+            id=self.name,
+            name=self.name,
+            state="ready" if self.model in installed else "not_configured",
+            message=message,
+            configured=True,
+            model=self.model,
+        )
 
 
 async def list_ollama_models(base_url: str | None) -> list[str]:

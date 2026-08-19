@@ -133,7 +133,16 @@ export default function PaperPage() {
 
       {busy && (
         <Banner kind="info">
-          <Spinner /> {busy} This can take a while — scientific analysis is not optimised for speed.
+          <Spinner /> {busy} This can take a while — scientific analysis is not optimised for speed.{' '}
+          <button
+            className="small subtle"
+            onClick={async () => {
+              await api.cancelPaperRequests(id)
+              setBusy('')
+            }}
+          >
+            Stop
+          </button>
         </Banner>
       )}
       {error && <Banner kind="error">{error}</Banner>}

@@ -7,7 +7,6 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from ..db import get_db
-from ..llm.base import LLMError
 from ..models import Issue, PaperProject, Relationship, ResearchInput, ResearchItem, utcnow
 from ..schemas import (
     AnalyzeRequest,
@@ -27,12 +26,13 @@ from ..sections import (
     SECTION_BY_KEY,
     SECTION_ITEM_TYPES,
     SECTION_KEYS,
+    SEVERITY_ORDER,
     Confirmation,
     Provenance,
-    SEVERITY_ORDER,
     Severity,
 )
 from ..services import analysis, readiness, research_state
+from ..services import usage as usage_service
 from .deps import get_paper
 
 router = APIRouter(tags=["checklist"])
@@ -143,13 +143,16 @@ async def analyze(
         unknown = [s for s in request.sections if s not in SECTION_BY_KEY]
         if unknown:
             raise HTTPException(status_code=400, detail=f"Unknown sections: {unknown}")
-    try:
-        outcome = await analysis.analyze_paper(
-            db, paper, sections=request.sections, run_review=request.run_review
-        )
-    except LLMError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
-    return AnalyzeResponse(**outcome, readiness=readiness.readiness(db, paper.id))
+    # A provider failure propagates: the application-level handler turns it
+    # into a 400 carrying a normalized error code.
+    outcome = await analysis.analyze_paper(
+        db, paper, sections=request.sections, run_review=request.run_review
+    )
+    return AnalyzeResponse(
+        **outcome,
+        readiness=readiness.readiness(db, paper.id),
+        meta=usage_service.last_event_meta(db, paper.id),
+    )
 
 
 @router.post("/papers/{paper_id}/sections/{section_key}/extract")
@@ -160,10 +163,7 @@ async def extract_one(
 ):
     if section_key not in SECTION_BY_KEY:
         raise HTTPException(status_code=404, detail=f"Unknown section '{section_key}'")
-    try:
-        _, stats = await analysis.extract_section(db, paper, section_key)
-    except LLMError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    _, stats = await analysis.extract_section(db, paper, section_key)
     return {"section": section_key, "stats": stats}
 
 
@@ -176,10 +176,7 @@ async def review_one(
     """Re-check a single section against its scientific criteria."""
     if section_key not in SECTION_BY_KEY:
         raise HTTPException(status_code=404, detail=f"Unknown section '{section_key}'")
-    try:
-        await analysis.review_section(db, paper, section_key)
-    except LLMError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    await analysis.review_section(db, paper, section_key)
     return get_section_detail(section_key, paper, db)
 
 
@@ -192,20 +189,14 @@ async def recheck_one(
     """Re-extract from the material, then review. Used after adding information."""
     if section_key not in SECTION_BY_KEY:
         raise HTTPException(status_code=404, detail=f"Unknown section '{section_key}'")
-    try:
-        await analysis.extract_section(db, paper, section_key)
-        await analysis.review_section(db, paper, section_key)
-    except LLMError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    await analysis.extract_section(db, paper, section_key)
+    await analysis.review_section(db, paper, section_key)
     return get_section_detail(section_key, paper, db)
 
 
 @router.post("/papers/{paper_id}/challenge", response_model=ChallengeOut)
 async def challenge(paper: PaperProject = Depends(get_paper), db: Session = Depends(get_db)):
-    try:
-        result = await analysis.challenge_research(db, paper)
-    except LLMError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    result = await analysis.challenge_research(db, paper)
     issues = list(
         db.scalars(
             select(Issue).where(
@@ -218,6 +209,7 @@ async def challenge(paper: PaperProject = Depends(get_paper), db: Session = Depe
         overall_assessment=result.overall_assessment,
         cross_section_observations=result.cross_section_observations,
         issues=[IssueOutSchema.model_validate(i) for i in issues],
+        meta=usage_service.last_event_meta(db, paper.id, "challenge"),
     )
 
 

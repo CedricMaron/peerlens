@@ -93,8 +93,8 @@ problems a section-by-section reading structurally cannot:
 
 ```
 BLOCKER
-The central claim attributes improvement to teacher specialization.
-However, E4 varies both specialization and ensemble size.
+The central claim attributes the improvement to the humidity readings.
+However, E4 varies both the humidity readings and the number of stations.
 
 Why it matters:
 The experiment cannot isolate the claimed mechanism.
@@ -102,7 +102,7 @@ The experiment cannot isolate the claimed mechanism.
 Affects: hypothesis, experiments, contribution
 
 Recommended action:
-Run a matched-size non-specialized ensemble control.
+Run a matched control with the same number of stations.
 ```
 
 **Provenance you can inspect and correct.** Everything PeerLens believes is
@@ -139,14 +139,22 @@ shown as unknown — never estimated, never fabricated.
 docker run -p 8000:8000 -v peerlens-data:/app/data ghcr.io/cedricmaron/peerlens:latest
 ```
 
-Then open <http://localhost:8000> → **Settings** → connect an AI provider →
-start your research.
+Then open <http://peerlens.localhost:8000> → **Settings** → connect an AI
+provider → start your research.
+
+That name needs no setup: browsers resolve any `*.localhost` address to your own
+machine, and a real name is easier to find in a browser history full of
+`localhost:` ports. Plain <http://localhost:8000> works exactly the same.
 
 You do not need Python, Node.js, npm, a database server, Redis, or PostgreSQL.
 One container, one port, one data location.
 
 Your research lives in the `peerlens-data` volume and survives container
 replacement and upgrades.
+
+The container has no Claude Code or Codex CLI inside it, so those two providers
+show as *not installed* there — use an API key or Ollama in Docker, or run
+PeerLens natively (`./run.sh`) to use your Claude or ChatGPT account.
 
 <details>
 <summary>Docker Compose (optional convenience)</summary>
@@ -164,15 +172,70 @@ normal local use.
 
 | Provider | Needs | Notes |
 |---|---|---|
+| **Claude Code** | the official CLI, signed in | Uses your existing Claude account. No API key. |
+| **OpenAI Codex** | the official CLI, signed in | Uses your existing ChatGPT account. No API key. |
+| **Anthropic API** | API key + model | |
+| **OpenAI API** | API key + model | |
 | **Ollama** | base URL + model | Fully local. No API key, no data leaves your machine. |
-| **OpenAI** | API key + model | |
-| **Anthropic** | API key + model | |
 
-Use **Test Connection** before saving.
+Settings shows what is installed, what is connected and what is configured, and
+**Test Connection** runs a real round-trip before you commit to a provider.
 
-API keys are stored server-side in your local SQLite database. They are never
-sent to the browser (only a masked hint), never logged, and never written to
-browser storage.
+### Setup
+
+**Option A — Claude Code**
+
+1. Install Claude Code and run `claude` once.
+2. Sign in with the official Claude flow (`claude auth login`, or **Connect** in
+   Settings, which runs the same command).
+3. Start PeerLens → **Settings → AI Provider** → **Use Claude Code**.
+
+**Option B — OpenAI Codex**
+
+1. Install the Codex CLI (`npm install -g @openai/codex`).
+2. Authenticate with `codex login`, or **Connect ChatGPT** in Settings.
+3. Select **OpenAI Codex**.
+
+**Option C — Anthropic API** — configure an Anthropic API key.
+
+**Option D — OpenAI API** — configure an OpenAI API key.
+
+**Option E — Ollama** — run a model locally and select **Ollama**.
+
+For Claude Code and Codex the model field is optional: leave it blank to use
+whatever the CLI is configured to use.
+
+### What PeerLens does and does not do with your account
+
+- **Claude/ChatGPT subscriptions and API billing are separate systems.** A Claude
+  Pro subscription does not pay for Anthropic API calls, and vice versa.
+- Account-backed access is **delegated entirely to the official Claude Code and
+  Codex tooling**. PeerLens starts the official login command and watches the
+  process; the browser flow belongs to the CLI.
+- PeerLens **never asks for a Claude or ChatGPT password**, never reads or copies
+  a credential file, never touches browser cookies, and never stores a session
+  token.
+- API keys are stored server-side in your local SQLite database. They are never
+  sent to the browser (only a masked hint), never logged, and never written to
+  browser storage.
+- **Using Ollama keeps model inference on your machine.** Nothing is sent to a
+  cloud provider.
+- **There is no silent fallback.** If the selected provider fails, the request
+  fails. PeerLens will not re-send unpublished research to a different vendor
+  without you choosing it.
+
+Claude Code and Codex are used as **inference backends**, not as coding agents.
+Every tool is disabled (`--tools ""` / `--sandbox read-only`), customizations
+(hooks, skills, plugins, MCP, `CLAUDE.md`) are switched off, and the working
+directory is an empty scratch folder inside the data directory — a research
+request cannot read or modify the PeerLens repository or anything else.
+
+Because those two providers are billed through a subscription rather than
+per token, the Usage page shows their cost as **unknown** rather than inventing
+a per-token estimate. Token counts are recorded when the CLI reports them.
+
+Windows users: if the CLI is installed inside WSL rather than on the Windows
+host, PeerLens finds it there automatically.
 
 ### Using a local Ollama model
 
@@ -238,10 +301,20 @@ everything from port 8000, exactly as the container does.
 
 Requirements: Python 3.11+, Node.js 20+.
 
-If port 8000 is already in use, set `PEERLENS_PORT` (both scripts honour it):
+If port 8000 is already in use, set `PEERLENS_PORT` (both scripts honour it, and
+the Vite dev proxy follows it):
 
 ```bash
-PEERLENS_PORT=8123 ./run.sh --prod
+PEERLENS_PORT=8123 ./run.sh --prod    # http://peerlens.localhost:8123
+```
+
+Put it in `.env` to set it once. PeerLens has no authentication, so if other
+machines can reach yours, also set `PEERLENS_HOST=127.0.0.1` to keep it on
+loopback:
+
+```
+PEERLENS_HOST=127.0.0.1
+PEERLENS_PORT=8123
 ```
 
 ## Architecture
@@ -256,7 +329,16 @@ backend/peerlens/
   sections.py        The eleven checklist sections and their dependency graph
   ai_schemas.py      Pydantic schemas that every LLM response must validate against
   prompts_loader.py  Composes prompts from prompts/
-  llm/               Provider abstraction (OpenAI, Anthropic, Ollama) + usage accounting
+  llm/               Provider layer + usage accounting
+    manager.py         The provider registry (the only place providers are listed)
+    base.py            AIRequest / AIEvent / provider interface
+    providers.py       OpenAI, Anthropic and Ollama over HTTP
+    cli_provider.py    Shared behaviour for CLI-backed providers
+    claude_code.py     Claude Code (your Claude account, via the official CLI)
+    codex_cli.py       OpenAI Codex (your ChatGPT account, via the official CLI)
+    process.py         Subprocess control: fixed binaries, argv arrays, cancellation
+    login.py           Supervises the official CLI login flows
+    errors.py          Normalized provider error codes
   services/          Ingestion, research state, analysis, readiness, manuscript, literature
   routers/           HTTP API
 
@@ -280,6 +362,18 @@ needed at this scale.
 Structured LLM output is validated with Pydantic, with one automatic repair
 attempt before an error is surfaced. Malformed scientific output is never
 silently accepted.
+
+**Providers execute requests; PeerLens judges research.** A provider receives a
+prompt and returns text, and that is the whole of its job. It cannot mark a
+section READY, resolve an issue or unlock the manuscript:
+
+```
+research material -> context builder -> prompt -> selected provider
+   -> structured output -> PeerLens parser -> readiness evaluation -> checklist
+```
+
+Adding a provider means adding one class and one registry entry in
+`llm/manager.py`. Nothing in `services/` changes, which is exactly the point.
 
 ## Evaluations
 

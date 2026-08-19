@@ -83,7 +83,8 @@ export default function UsagePage() {
           <h1>Usage</h1>
           <p className="muted">
             Every AI call PeerLens makes. Values the provider did not report are shown as
-            unknown, never estimated.
+            unknown, never estimated. Claude Code and Codex are billed through your
+            subscription rather than per token, so their cost is unknown by design.
           </p>
         </div>
       </div>

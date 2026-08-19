@@ -100,7 +100,7 @@ async def compile_manuscript(
         ]
     )
 
-    result, _ = await client.run_structured(
+    result, llm_result = await client.run_structured(
         db,
         operation="compile_manuscript",
         system=global_prompt("compile_manuscript"),
@@ -119,6 +119,8 @@ async def compile_manuscript(
         sections={
             "sections": [s.model_dump() for s in result.sections],
             "content_gaps": result.content_gaps,
+            # Reproducibility: which provider and model wrote this manuscript.
+            "generation": client.run_metadata(llm_result, "compile_manuscript"),
         },
     )
     db.add(manuscript)
