@@ -8,7 +8,7 @@
   "inputs": [
     {
       "label": "Raw log",
-      "content": "\nCIFAR-10 Dirichlet(0.1): FedSpec 74.8%, FedAvg 71.2%.\nCIFAR-100 Dirichlet(0.1): FedSpec 41.2%, FedAvg 44.9%.  <- our method is worse here\nSVHN Dirichlet(0.5): FedSpec 88.1%, FedAvg 88.0%.  <- essentially no difference\n\nSummary for the paper: FedSpec improves accuracy over FedAvg on CIFAR-10.\nWe will report the CIFAR-10 result. The CIFAR-100 run probably had a bad\nhyperparameter setting so we are leaving it out.\n"
+      "content": "\nCell chemistry A, 25 C: adaptive 91.4% capacity retained, fixed 86.2%.\nCell chemistry B, 25 C: adaptive 78.3%, fixed 82.6%.  <- our method is worse here\nCell chemistry C, 40 C: adaptive 88.0%, fixed 88.1%.  <- essentially no difference\n\nSummary for the paper: adaptive charging improves capacity retention.\nWe will report the chemistry A result. The chemistry B run probably had a bad\ncell batch so we are leaving it out.\n"
     }
   ],
   "expect": {
@@ -17,8 +17,8 @@
       {
         "name": "identifies the omitted negative result",
         "any": [
-          "cifar-100",
-          "cifar100",
+          "chemistry b",
+          "chemistry b",
           "negative result",
           "worse",
           "omitted",
@@ -32,7 +32,7 @@
       {
         "name": "identifies the null result",
         "any": [
-          "svhn",
+          "chemistry c",
           "no difference",
           "null",
           "essentially identical",

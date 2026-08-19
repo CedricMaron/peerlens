@@ -1,6 +1,6 @@
 {
   "id": "missing_important_baseline",
-  "description": "A state-of-the-art claim compared only to a weak baseline must be flagged.",
+  "description": "A state-of-the-art claim is made without running the stronger baselines named in related work.",
   "target": {
     "kind": "section_review",
     "section": "experiments"
@@ -8,7 +8,7 @@
   "inputs": [
     {
       "label": "Evaluation plan",
-      "content": "\nWe evaluate FedSpec against FedAvg (McMahan et al., 2017) only.\n\nOur related work section discusses FedProx, SCAFFOLD, MOON and FedDistill as the\nstandard approaches for non-IID federated learning, and notes that FedDistill is\nthe closest prior work to ours.\n\nWe claim FedSpec achieves state-of-the-art performance under label skew.\n"
+      "content": "\nWe evaluate our urban heat model against nearest-neighbour interpolation only.\n\nOur related work section discusses kriging, gradient-boosted regression and the\nphysics-based UrbClim model as the standard approaches for urban heat mapping, and\nnotes that gradient-boosted regression is the closest prior work to ours.\n\nWe claim our model achieves state-of-the-art accuracy for urban heat prediction.\n"
     }
   ],
   "expect": {
@@ -17,14 +17,15 @@
       {
         "name": "names the absent stronger baselines",
         "any": [
-          "feddistill",
-          "scaffold",
-          "fedprox",
-          "moon",
+          "kriging",
+          "gradient-boosted",
+          "gradient boosted",
+          "urbclim",
+          "physics-based",
           "closest prior work",
           "stronger baseline",
           "missing baseline",
-          "only fedavg",
+          "only interpolation",
           "sole baseline"
         ]
       },

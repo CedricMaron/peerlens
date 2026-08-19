@@ -1,34 +1,36 @@
 {
   "id": "conclusion_stronger_than_evidence",
-  "description": "Cross-section: the conclusion asserts a mechanism the experiments never isolated.",
+  "description": "The headline conclusion claims a mechanism the experiment never isolated, from a single run.",
   "target": {
     "kind": "challenge"
   },
   "inputs": [
     {
       "label": "Full draft",
-      "content": "\nProblem: Federated learning degrades under label skew.\nGap: Prior distillation methods use a single global teacher.\nQuestion: Does teacher specialization improve federated distillation?\nH1: Class-specialized teachers improve knowledge transfer under label skew.\n\nMethodology: We train 8 teachers, each on 2 classes, and distill into a global student.\nBaselines: FedAvg.\n\nE4: specialized ensemble (8 teachers) vs single non-specialized teacher.\nR1: 74.8% vs 71.2%, one run each, no variance reported.\n\nF1: Specialization improves knowledge transfer.\nC1: Class-specialized teachers are a superior mechanism for federated knowledge\ntransfer, and our results demonstrate that specialization is the cause of the gain.\n\nLimitations: More datasets could be tested in future work.\n"
+      "content": "\nProblem: Lithium-ion cells lose capacity faster than datasheet models predict.\nGap: Prior degradation models use a single fixed charging profile.\nQuestion: Does an adaptive charging profile slow capacity fade?\nH1: Adaptive charging slows capacity fade BECAUSE it limits lithium plating.\n\nMethodology: We cycle cells under an adaptive profile and compare against a fixed\nprofile. Baseline: the manufacturer's recommended constant-current profile.\n\nE4: adaptive profile at 25 C (n=1 cell) vs fixed profile at 35 C (n=1 cell).\nResult: adaptive retains 91.4% capacity after 500 cycles, fixed retains 86.2%.\nOne cell per condition, no repeats, no confidence interval.\n\nFinding: adaptive charging slows capacity fade.\nClaim: adaptive charging limits lithium plating and is the preferred profile for\nall consumer cells.\n\nLimitations: as with any study, further work is needed.\n"
     }
   ],
   "expect": {
-    "min_severity": "blocker",
+    "min_severity": "major",
     "signals": [
       {
         "name": "traces the claim back to the confounded experiment",
         "any": [
           "e4",
           "confound",
-          "ensemble size",
-          "number of teachers",
+          "temperature",
+          "25 c",
+          "35 c",
           "cannot isolate",
           "cannot attribute",
           "two",
-          "capacity"
+          "varies both"
         ]
       },
       {
         "name": "flags the causal/mechanism claim as unsupported",
         "any": [
+          "plating",
           "mechanism",
           "cause",
           "causal",
@@ -42,10 +44,13 @@
       {
         "name": "notes the missing variance or single run",
         "any": [
+          "one cell",
+          "single cell",
+          "n=1",
           "one run",
           "single run",
           "variance",
-          "seed",
+          "replicate",
           "noise",
           "spread",
           "repetition"
@@ -58,7 +63,8 @@
           "generic",
           "does not address",
           "fails to acknowledge",
-          "more datasets"
+          "boilerplate",
+          "more cells"
         ]
       }
     ],

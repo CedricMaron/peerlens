@@ -55,9 +55,9 @@ Bad (generic, useless):
 > Statistical significance testing would strengthen the results.
 
 Good (specific, actionable):
-> The central claim attributes the improvement to teacher specialisation, but E4
-> varies specialisation and ensemble size simultaneously, so the observed gain
-> cannot be attributed to specialisation alone.
+> The central claim attributes the improvement to the added humidity readings,
+> but E4 varies the humidity readings and the number of sensor stations
+> simultaneously, so the observed gain cannot be attributed to humidity alone.
 
 Actively look for:
 

@@ -81,10 +81,9 @@ export default function AddResearchModal({
           autoFocus
           onChange={(e) => setText(e.target.value)}
           placeholder={
-            'Anything at all. For example:\n\n' +
-            'E4 compares our specialized ensemble (8 teachers) against a single ' +
-            'non-specialized teacher on CIFAR-10, Dirichlet alpha=0.1. ' +
-            'We get 74.8% vs 71.2%, one run each.'
+            'Describe your research idea, or anything you have so far.\n\n' +
+            'For example: an idea, a note from a paper, a method, an experiment, ' +
+            'a result, a limitation you are worried about.'
           }
           style={{ minHeight: 200 }}
         />

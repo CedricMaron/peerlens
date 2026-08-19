@@ -33,7 +33,7 @@ Useful `details` keys:
   Research material tends to under-report work that disagrees with it.
 - Extract baselines the material treats as standard in this field, even when
   the researcher has not used them.
-- Where the material characterises prior work ("X fails under non-IID data"),
+- Where the material characterises prior work ("X fails on sparse measurements"),
   record it, and record in `details.characterisation_basis` whether that came
   from reading the paper, from another paper's claim, or from assumption.
 - Add a `notes` entry if the literature coverage looks narrow relative to the

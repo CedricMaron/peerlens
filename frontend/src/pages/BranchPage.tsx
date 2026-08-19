@@ -117,7 +117,7 @@ export default function BranchPage() {
               autoFocus
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="e.g. Class-specialized teachers for federated distillation"
+              placeholder="e.g. Street-level humidity for urban heat prediction"
             />
             <p className="dim" style={{ marginTop: '0.4rem' }}>
               You can change this at any time. Nothing else is required to start.

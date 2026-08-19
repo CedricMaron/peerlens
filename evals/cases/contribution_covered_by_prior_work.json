@@ -1,6 +1,6 @@
 {
   "id": "contribution_covered_by_prior_work",
-  "description": "A contribution the supplied prior work already establishes is not a contribution.",
+  "description": "The claimed novelty is already covered by prior work supplied by the researcher.",
   "target": {
     "kind": "section_review",
     "section": "contribution"
@@ -8,7 +8,7 @@
   "inputs": [
     {
       "label": "Prior work and contribution",
-      "content": "\nSupplied prior work:\n[L1] Zhang et al. 2022, \"Class-wise Teacher Ensembles for Federated Distillation\".\n     Trains one teacher per class group and distills into a global student under\n     Dirichlet label skew. Reports gains over FedAvg on CIFAR-10.\n     This is the closest prior work.\n\nOur contribution:\nC1: We are the first to propose training multiple teachers, each specialized on a\n    subset of classes, and distilling them into a global student for federated\n    learning under label skew. Our approach is novel.\n\nDifference from Zhang et al.: we use 2 classes per teacher instead of their class\ngroups, and we implement it in PyTorch rather than TensorFlow.\n"
+      "content": "\nSupplied prior work:\n[L1] Alvarez et al. 2022, \"Tuned LED Spectra for Greenhouse Lettuce Growth\".\n     Grows lettuce under per-growth-stage LED spectra and reports biomass gains over\n     a fixed white-light control. This is the closest prior work.\n\nOur contribution:\nC1: We are the first to propose changing the LED spectrum by growth stage rather than\n    using a fixed spectrum for the whole cycle.\nC2: Our implementation uses a different controller library than Alvarez et al.\n"
     }
   ],
   "expect": {
@@ -17,7 +17,7 @@
       {
         "name": "identifies that the closest prior work already does this",
         "any": [
-          "zhang",
+          "alvarez",
           "l1",
           "already",
           "closest prior work",
@@ -44,14 +44,13 @@
         "name": "identifies the difference as implementation or parameter, not science",
         "any": [
           "implementation",
-          "pytorch",
-          "tensorflow",
+          "library",
           "parameter",
           "engineering",
           "not a scientific",
           "configuration",
           "incremental",
-          "2 classes"
+          "tooling"
         ]
       }
     ],

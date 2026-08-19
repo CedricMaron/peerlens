@@ -42,7 +42,7 @@ Your only question is:
    evidence.
 
    When the issue is an *absence*, say so directly — "no experiment in the
-   supplied material varies specialisation alone" — rather than attributing the
+   supplied material varies that factor alone" — rather than attributing the
    absence to a numbered section you cannot see. Quoting the researcher's own
    wording is always safe; inventing a location for it is not.
 

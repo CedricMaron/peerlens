@@ -44,7 +44,7 @@ Drop a JSON file into `evals/cases/`. No code changes are needed.
     "signals": [                       // each signal: any one regex must match
       {
         "name": "identifies the single-dataset basis",
-        "any": ["single dataset", "one dataset", "only CIFAR"]
+        "any": ["single dataset", "one dataset", "one city"]
       }
     ],
     "forbidden": [                     // must NOT appear anywhere in the output

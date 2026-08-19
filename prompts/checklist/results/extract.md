@@ -23,7 +23,7 @@ Useful `details` keys:
 
 - **Transcribe numbers exactly.** Never round, rescale, recompute, aggregate or
   "clean up" a value. If a CSV or table was supplied, read from it directly.
-- **Do not interpret.** "Accuracy rose from 71.2% to 74.8%" is a result.
+- **Do not interpret.** "Error fell from 2.9 C to 2.1 C" is a result.
   "The method improves accuracy" is a finding and belongs to the next section.
 - **Extract negative, null and mixed results with equal prominence.** These are
   the results most likely to be dropped between notes and manuscript, and

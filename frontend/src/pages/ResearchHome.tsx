@@ -122,7 +122,7 @@ export default function ResearchHome() {
               value={name}
               autoFocus
               onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Federated learning under client heterogeneity"
+              placeholder="e.g. Urban heat prediction"
             />
           </div>
           <div className="field">

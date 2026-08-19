@@ -1,6 +1,6 @@
 {
   "id": "novelty_from_failed_search",
-  "description": "Novelty justified by an unsuccessful literature search must never be accepted.",
+  "description": "A research gap is claimed because a literature search returned nothing.",
   "target": {
     "kind": "section_review",
     "section": "gap"
@@ -8,7 +8,7 @@
   "inputs": [
     {
       "label": "Gap statement",
-      "content": "\nWe searched Google Scholar for \"class-specialized federated teachers\" and found nothing.\nWe therefore conclude that no prior work has studied class-specialized teachers in\nfederated distillation, and that this is a novel research gap. No previous work exists\non this topic.\n"
+      "content": "\nWe searched Google Scholar for \"street-level humidity urban heat model\" and found\nnothing. We therefore conclude that no prior work has studied humidity readings for\nurban heat prediction, and that this is a novel research gap. No previous work exists\non this topic.\n"
     }
   ],
   "expect": {

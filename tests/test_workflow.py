@@ -20,7 +20,7 @@ def extraction_json(label: str, statement: str, coverage: str = "substantial") -
                 {
                     "label": label,
                     "statement": statement,
-                    "details": {"scope": "label-skew non-IID"},
+                    "details": {"scope": "one city, summer only"},
                     "provenance": "extracted",
                     "source_input_ids": [1],
                     "relations": [],
@@ -36,10 +36,10 @@ def review_json(status: str, severity: str | None = "major") -> str:
         [
             {
                 "severity": severity,
-                "issue": "E4 varies specialization and ensemble size simultaneously.",
-                "why_it_matters": "The gain cannot be attributed to specialization.",
+                "issue": "E4 varies the humidity readings and the station count simultaneously.",
+                "why_it_matters": "The gain cannot be attributed to the humidity readings.",
                 "evidence": "Experiment E4 as described in input #1.",
-                "recommended_action": "Run a matched-size non-specialized ensemble control.",
+                "recommended_action": "Run a matched control with the same station count.",
                 "affected_sections": ["experiments", "contribution"],
             }
         ]
@@ -63,8 +63,8 @@ def review_json(status: str, severity: str | None = "major") -> str:
 
 
 def setup_paper(client) -> int:
-    branch = client.post("/api/branches", json={"name": "FL"}).json()
-    paper = client.post(f"/api/branches/{branch['id']}/papers", json={"title": "Teachers"}).json()
+    branch = client.post("/api/branches", json={"name": "Urban heat"}).json()
+    paper = client.post(f"/api/branches/{branch['id']}/papers", json={"title": "Humidity readings"}).json()
     return paper["id"]
 
 
@@ -93,11 +93,11 @@ def test_full_workflow(client, scripted):
     paper_id = setup_paper(client)
     client.post(
         f"/api/papers/{paper_id}/inputs",
-        json={"label": "E4", "content": "Specialized ensemble 74.8% vs baseline 71.2%."},
+        json={"label": "E4", "content": "Model with humidity 2.1 C MAE vs baseline 2.9 C."},
     )
 
     # --- Extract + review the hypothesis section -------------------------
-    scripted([extraction_json("H1", "class-specialized teachers improve transfer"),
+    scripted([extraction_json("H1", "humidity readings improve heat prediction"),
               review_json("needs_attention")])
     detail = client.post(f"/api/papers/{paper_id}/sections/hypothesis/recheck").json()
 
@@ -116,7 +116,7 @@ def test_full_workflow(client, scripted):
     # --- The researcher corrects the model's understanding ---------------
     item_id = detail["items"][0]["id"]
     edited = client.patch(
-        f"/api/items/{item_id}", json={"statement": "Only under label-skew non-IID."}
+        f"/api/items/{item_id}", json={"statement": "Only for dense sensor coverage."}
     ).json()
     assert edited["confirmation"] == "edited"
 
@@ -130,7 +130,7 @@ def test_full_workflow(client, scripted):
     # --- Re-check: the correction survives re-extraction ------------------
     scripted([extraction_json("H1", "AI would overwrite this"), review_json("ready", severity=None)])
     rechecked = client.post(f"/api/papers/{paper_id}/sections/hypothesis/recheck").json()
-    assert rechecked["items"][0]["statement"] == "Only under label-skew non-IID."
+    assert rechecked["items"][0]["statement"] == "Only for dense sensor coverage."
     assert rechecked["status"] == "ready"
     assert rechecked["issues"] == []
 
@@ -160,7 +160,7 @@ def test_challenge_demotes_ready_sections_and_locks_compile(client, scripted):
                     "issues": [
                         {
                             "severity": "blocker",
-                            "issue": "Claim attributes improvement to specialization.",
+                            "issue": "Claim attributes the improvement to the humidity readings.",
                             "why_it_matters": "E4 cannot isolate the mechanism.",
                             "evidence": "E4 varies two factors.",
                             "recommended_action": "Run a matched-size control.",
@@ -209,10 +209,10 @@ def test_compile_unlocks_when_all_sections_ready(client, scripted, db):
         [
             json.dumps(
                 {
-                    "title": "Class-specialized teachers for federated distillation",
+                    "title": "Street-level humidity for urban heat prediction",
                     "sections": [
-                        {"heading": "Abstract", "markdown": "We study specialization."},
-                        {"heading": "Results", "markdown": "74.8% vs 71.2%, single run."},
+                        {"heading": "Abstract", "markdown": "We study humidity readings."},
+                        {"heading": "Results", "markdown": "2.1 C vs 2.9 C, single run."},
                     ],
                     "content_gaps": ["No variance reported for E4."],
                 }
@@ -220,8 +220,8 @@ def test_compile_unlocks_when_all_sections_ready(client, scripted, db):
         ]
     )
     manuscript = client.post(f"/api/papers/{paper_id}/manuscript").json()
-    assert "Class-specialized" in manuscript["title"]
-    assert "74.8%" in manuscript["markdown"]
+    assert "Street-level humidity" in manuscript["title"]
+    assert "2.1 C" in manuscript["markdown"]
     # Content gaps are surfaced, not silently filled.
     assert "No variance reported" in manuscript["markdown"]
 

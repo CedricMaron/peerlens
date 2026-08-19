@@ -8,7 +8,7 @@
   "inputs": [
     {
       "label": "Results notes",
-      "content": "\nResults (one run each, no seeds repeated):\nFedSpec: 74.8% top-1 accuracy\nFedAvg baseline: 71.2% top-1 accuracy\n\nOur method significantly outperforms the baseline. The improvement is consistent\nand statistically meaningful. We did not run significance tests.\n"
+      "content": "\nResults (one run each, no repeats):\nTuned LED spectrum: 128.4 g mean fresh biomass per plant\nFixed white-light control: 121.9 g mean fresh biomass per plant\n\nOur spectrum significantly outperforms the control. The improvement is consistent\nand statistically meaningful. We did not run significance tests.\n"
     }
   ],
   "expect": {

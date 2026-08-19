@@ -1,6 +1,6 @@
 {
   "id": "universal_claim_one_dataset",
-  "description": "A universal claim resting on a single dataset must be flagged as overgeneralisation.",
+  "description": "A universal claim rests on evidence from a single dataset.",
   "target": {
     "kind": "section_review",
     "section": "contribution"
@@ -8,7 +8,7 @@
   "inputs": [
     {
       "label": "Draft contributions",
-      "content": "\nWe evaluate FedSpec only on CIFAR-10 with a Dirichlet(0.1) partition across 10 clients.\nFedSpec reaches 74.8% vs 71.2% for FedAvg.\n\nContribution: We show that class-specialized teachers improve federated knowledge\ndistillation. Our abstract states: \"Class-specialized teachers improve knowledge\ntransfer in federated learning.\" The conclusion states that FedSpec is an effective\ngeneral solution for heterogeneous federated learning.\n"
+      "content": "\nWe evaluate our urban heat model only on one city (Lyon, summer 2023, 40 sensor\nstations). It reaches 2.1 C mean absolute error vs 2.9 C for the interpolation\nbaseline.\n\nContribution: We show that street-level humidity readings improve urban heat\nprediction. Our abstract states: \"Humidity readings improve urban heat prediction\nin cities.\" The conclusion states that the method is an effective general solution\nfor urban climate monitoring.\n"
     }
   ],
   "expect": {
@@ -19,11 +19,14 @@
         "any": [
           "single dataset",
           "one dataset",
-          "only cifar",
-          "cifar-10 only",
+          "one city",
+          "only lyon",
+          "single city",
           "sole dataset",
           "a single benchmark",
-          "one benchmark"
+          "one benchmark",
+          "one site",
+          "single site"
         ]
       },
       {
@@ -48,7 +51,8 @@
           "qualify",
           "scope the claim",
           "additional dataset",
-          "more datasets",
+          "more cities",
+          "another city",
           "condition the claim",
           "weaker form",
           "hedge"

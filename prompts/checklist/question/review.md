@@ -19,7 +19,7 @@ actually connected to the gap.
 5. **Relation to the gap** — does answering this question close the identified
    gap? A mismatch here means the study will not deliver what it promises.
 6. **Scope match** — is the question's scope the same as the scope the study can
-   actually cover? A question about "federated learning" answered with one
+   actually cover? A question about "urban climate" answered with one
    dataset is a scope mismatch that guarantees overclaiming later.
 7. **Causal language discipline** — if the question asks *why* or *whether X
    causes Y*, the design must be able to support a causal answer. Flag causal

@@ -300,7 +300,7 @@ function ManualEntry({
         <input
           value={form.relation_to_research}
           onChange={(e) => set('relation_to_research', e.target.value)}
-          placeholder="e.g. closest prior work — uses a single global teacher"
+          placeholder="e.g. closest prior work — uses interpolation only"
         />
       </div>
       <p className="dim">

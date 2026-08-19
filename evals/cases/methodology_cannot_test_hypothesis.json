@@ -1,6 +1,6 @@
 {
   "id": "methodology_cannot_test_hypothesis",
-  "description": "A design that cannot discriminate the hypothesis from its negation is a blocker.",
+  "description": "The design never measures the mechanism the hypothesis names.",
   "target": {
     "kind": "section_review",
     "section": "methodology"
@@ -8,7 +8,7 @@
   "inputs": [
     {
       "label": "Method",
-      "content": "\nH1: Class-specialized teachers improve knowledge transfer BECAUSE specialization\nreduces gradient conflict between clients.\n\nMethodology: We train FedSpec on CIFAR-10 and measure final global model top-1\naccuracy. We compare against FedAvg accuracy. We do not measure gradient conflict,\ngradient alignment, or any intermediate quantity. We run one configuration.\n"
+      "content": "\nH1: Adaptive charging slows capacity fade BECAUSE it limits lithium plating on the\nanode.\n\nMethodology: We cycle cells under the adaptive profile and measure remaining capacity\nafter 500 cycles. We compare against the fixed profile's remaining capacity. We do not\nmeasure plating, anode potential, or any intermediate quantity. We run one\nconfiguration.\n"
     }
   ],
   "expect": {
@@ -17,14 +17,15 @@
       {
         "name": "identifies that the proposed mechanism is never measured",
         "any": [
-          "gradient conflict",
+          "plating",
           "mechanism",
           "not measured",
           "does not measure",
           "no measurement",
           "intermediate",
           "unmeasured",
-          "cannot observe"
+          "cannot observe",
+          "anode"
         ]
       },
       {
@@ -47,7 +48,6 @@
           "instrument",
           "record",
           "quantif",
-          "report gradient",
           "ablation",
           "additional measurement",
           "narrow the hypothesis",

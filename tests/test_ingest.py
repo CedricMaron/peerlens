@@ -15,20 +15,20 @@ def test_supported_extensions():
 
 
 def test_plain_text_is_read_verbatim():
-    body = "H1: specialization improves transfer.\nE4 varies two things at once."
+    body = "H1: humidity readings improve prediction.\nE4 varies two things at once."
     outcome = ingest.extract_text(body.encode(), "notes.md")
     assert outcome.text == body
     assert "Markdown" in outcome.note
 
 
 def test_csv_keeps_exact_values():
-    csv_bytes = b"method,accuracy,seed\nours,74.8,1\nbaseline,71.2,1\n"
+    csv_bytes = b"method,mae_celsius,run\nours,2.1,1\nbaseline,2.9,1\n"
     outcome = ingest.extract_text(csv_bytes, "results.csv")
     # Exact values must survive: rounding results would corrupt the science.
-    assert "74.8" in outcome.text
-    assert "71.2" in outcome.text
+    assert "2.1" in outcome.text
+    assert "2.9" in outcome.text
     assert "2 data rows" in outcome.text
-    assert "accuracy" in outcome.text
+    assert "mae_celsius" in outcome.text
 
 
 def test_csv_truncation_is_disclosed():

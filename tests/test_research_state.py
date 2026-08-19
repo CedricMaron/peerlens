@@ -49,7 +49,7 @@ def test_extraction_creates_items_with_provenance(db):
         db,
         paper.id,
         "hypothesis",
-        extraction(item("H1", "Specialization improves transfer", source_input_ids=[3])),
+        extraction(item("H1", "Humidity readings improve prediction", source_input_ids=[3])),
     )
     items = research_state.active_items(db, paper.id, "hypothesis")
     assert len(items) == 1
@@ -79,14 +79,14 @@ def test_confirmed_items_survive_re_extraction(db):
 
 def test_edited_items_survive_re_extraction(db):
     paper = make_paper(db)
-    research_state.apply_extraction(db, paper.id, "results", extraction(item("R1", "74.8%")))
+    research_state.apply_extraction(db, paper.id, "results", extraction(item("R1", "2.1 C")))
     stored = research_state.active_items(db, paper.id, "results")[0]
-    stored.statement = "74.8% (mean of 3 seeds)"
+    stored.statement = "2.1 C (mean of 3 runs)"
     stored.confirmation = Confirmation.EDITED.value
     db.commit()
 
-    research_state.apply_extraction(db, paper.id, "results", extraction(item("R1", "74.8%")))
-    assert research_state.active_items(db, paper.id, "results")[0].statement.endswith("3 seeds)")
+    research_state.apply_extraction(db, paper.id, "results", extraction(item("R1", "2.1 C")))
+    assert research_state.active_items(db, paper.id, "results")[0].statement.endswith("3 runs)")
 
 
 def test_rejected_items_are_not_resurrected(db):
@@ -121,7 +121,7 @@ def test_relationships_only_link_existing_items(db):
         extraction(
             item(
                 "H1",
-                "specialization helps",
+                "humidity readings help",
                 relations=[
                     ExtractedRelation(rel_type="tested_by", target_label="E4"),
                     # A dangling reference must be dropped, never invented into existence.

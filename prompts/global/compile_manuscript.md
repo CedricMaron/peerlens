@@ -53,7 +53,7 @@ Produce these sections, in this order, as separate entries:
   Discussion states what it might mean, marked as interpretation.
 - Preserve hedging from the Research State exactly. If a finding is
   `speculative`, the prose must read as speculative.
-- Preserve scope conditions. If a claim holds under label-skew non-IID
+- Preserve scope conditions. If a claim holds under one measurement site
   partitions, the sentence says so; it does not quietly become general.
 - Cite supplied references by the labels given. Never fabricate a citation, a
   year, or an author. If a statement needs a citation you were not given, write

@@ -8,7 +8,7 @@
   "inputs": [
     {
       "label": "Experiment E4",
-      "content": "\nH1: Teacher specialization improves knowledge transfer.\n\nE4 compares:\n  Condition A: our specialized ensemble - 8 teachers, each specialized on 2 classes\n  Condition B: baseline - 1 non-specialized teacher\n\nResult: A reaches 74.8%, B reaches 71.2%. We conclude that specialization improves\nknowledge transfer.\n"
+      "content": "\nH1: Adding street-level humidity readings improves urban heat prediction.\n\nE4 compares:\n  Condition A: our model with humidity readings, trained on 40 sensor stations\n  Condition B: baseline model without humidity readings, trained on 10 stations\n\nResult: A reaches 2.1 C mean absolute error, B reaches 2.9 C. We conclude that\nhumidity readings improve urban heat prediction.\n"
     }
   ],
   "expect": {
@@ -19,12 +19,12 @@
         "any": [
           "confound",
           "two factors",
-          "ensemble size",
-          "number of teachers",
+          "number of stations",
+          "station count",
+          "training data",
           "more than one",
           "simultaneous",
           "both",
-          "capacity",
           "varies both",
           "conflat"
         ]
@@ -46,12 +46,11 @@
         "name": "recommends the matched control",
         "any": [
           "matched",
-          "same number of teachers",
-          "8 non-specialized",
-          "equal size",
+          "same number of stations",
+          "equal",
           "control condition",
-          "non-specialized ensemble",
-          "same ensemble size",
+          "same training data",
+          "hold constant",
           "ablation"
         ]
       }

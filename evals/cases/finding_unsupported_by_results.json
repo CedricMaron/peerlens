@@ -8,7 +8,7 @@
   "inputs": [
     {
       "label": "Findings draft",
-      "content": "\nResults we have:\nR1: FedSpec 74.8% vs FedAvg 71.2% top-1 accuracy on CIFAR-10, one run.\n\nFindings:\nF1: FedSpec achieves higher accuracy than FedAvg on CIFAR-10.\nF2: FedSpec converges faster than FedAvg.\nF3: FedSpec is more robust to client dropout.\nF4: FedSpec reduces communication cost.\n\nWe did not measure convergence speed, client dropout, or communication cost.\n"
+      "content": "\nResults we have:\nR1: our urban heat model reaches 2.1 C mean absolute error vs 2.9 C for the\n    interpolation baseline, on one city, one summer, one run.\n\nFindings:\nF1: the model is more accurate than interpolation on this city.\nF2: the model trains faster than interpolation.\nF3: the model is more robust to sensor outages.\nF4: the model reduces sensor deployment cost.\n\nWe did not measure training time, sensor outages, or deployment cost.\n"
     }
   ],
   "expect": {

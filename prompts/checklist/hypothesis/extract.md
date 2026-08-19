@@ -10,7 +10,7 @@ if they have one.
 Useful `details` keys:
 
 - `scope` — the conditions under which the hypothesis is claimed to hold
-  (e.g. "label-skew non-IID, 10–100 clients")
+  (e.g. "one city, summer months only")
 - `independent_variable` — what is manipulated
 - `dependent_variable` — what is measured
 - `expected_effect` — the predicted direction and, if stated, magnitude
@@ -27,9 +27,9 @@ Useful `details` keys:
   `status` recording where you recovered it from. This is useful precisely
   because it makes an unexamined assumption visible.
 - Keep the researcher's predicted mechanism separate from the predicted effect.
-  Conflating "specialisation improves accuracy" (effect) with "because
-  specialisation improves knowledge transfer" (mechanism) hides the fact that
-  the mechanism usually goes untested.
+  Conflating "the added readings improve accuracy" (effect) with "because they
+  capture local humidity variation" (mechanism) hides the fact that the
+  mechanism usually goes untested.
 - Do not repair an unfalsifiable hypothesis into a falsifiable one. Extract it
   as stated; the review step handles it.
 - Link each hypothesis to the experiments that test it with `tested_by`
